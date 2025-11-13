@@ -1,7 +1,6 @@
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
-using Lumina.Extensions;
 
 namespace Collections;
 
@@ -34,24 +33,30 @@ public unsafe class PreviewExecutor
         }
     }
 
-    // Use when dye event is applied to a slot without a preview.
+    // Use when dye event is applied to a slot that doesn't match collectible.
     // more expensive than through using the collectible.
     public void PreviewWithTryOnRestrictions(EquipSlot equipSlot, uint stain0Id, uint stain1Id, bool tryOn)
-    {
-        // var invSlot = InventoryManager.Instance()->GetInventorySlot(InventoryType.EquippedItems, EquipSlotConverter.EquipSlotToInventorySlot(equipSlot));
-        // var item = ExcelCache<ItemAdapter>.GetSheet().GetRow(invSlot->GlamourId != 0 ? invSlot->GlamourId : invSlot->ItemId);
-        var equippedPreview = Character->DrawData.Equipment(EquipSlotConverter.EquipSlotToEquipmentSlot(equipSlot));
-        var item = ExcelCache<ItemAdapter>.GetSheet().FirstOrNull(item => (ushort)item.ModelMain == equippedPreview.Id && ((byte)(item.ModelMain >> 16)) == equippedPreview.Variant);
-        // if(stain0Id < 0) stain0Id = invSlot->Stains[0];
-        // if(stain1Id < 0) stain0Id = invSlot->Stains[1];
+    { 
+        // separate process for TryOn
         var tryOnOverride = tryOn; // no need to worry about already equipped mog items
         if (tryOnOverride)
         {
+            var invSlot = InventoryManager.Instance()->GetInventorySlot(InventoryType.EquippedItems, EquipSlotConverter.EquipSlotToInventorySlot(equipSlot));
+            var item = ExcelCache<ItemAdapter>.GetSheet().GetRow(invSlot->GlamourId != 0 ? invSlot->GlamourId : invSlot->ItemId);
             TryOn(item.Value.RowId, (byte)stain0Id, (byte)stain1Id);
         }
         else
         {
-            Preview(item.Value, (byte)stain0Id, (byte)stain1Id, true, equipSlot);
+            if (EquipSlotConverter.EquipSlotToWeaponSlot(equipSlot) != DrawDataContainer.WeaponSlot.Unk)
+            {
+                var weapon = Character->DrawData.Weapon(EquipSlotConverter.EquipSlotToWeaponSlot(equipSlot)).ModelId;
+                PreviewWeapon(equipSlot, GetWeaponModelId(weapon, (byte)stain0Id, (byte)stain1Id));
+            }
+            else
+            {
+                var equipment = Character->DrawData.Equipment(EquipSlotConverter.EquipSlotToEquipmentSlot(equipSlot));
+                PreviewEquipment(equipSlot, GetEquipmentModelId(equipment, (byte)stain0Id, (byte)stain1Id));
+            }
         }
     }
 
@@ -167,6 +172,17 @@ public unsafe class PreviewExecutor
         };
     }
 
+    private EquipmentModelId GetEquipmentModelId(EquipmentModelId item, byte stain0Id, byte? stain1Id)
+    {
+        return new EquipmentModelId()
+        {
+            Id = item.Id,
+            Stain0 = stain0Id,
+            Stain1 = stain1Id ?? 0,
+            Variant = item.Variant,
+        };
+    }
+
     private WeaponModelId GetWeaponModelId(ItemAdapter item, byte stain0Id, byte? stain1Id)
     {
         return new WeaponModelId()
@@ -176,6 +192,17 @@ public unsafe class PreviewExecutor
             Stain0 = stain0Id,
             Stain1 = stain1Id ?? 0,
             Variant = (byte)(item.ModelMain >> 32),
+        };
+    }
+    private WeaponModelId GetWeaponModelId(WeaponModelId item, byte stain0Id, byte? stain1Id)
+    {
+        return new WeaponModelId()
+        {
+            Id = item.Id,
+            Type = item.Type,
+            Stain0 = stain0Id,
+            Stain1 = stain1Id ?? 0,
+            Variant = item.Variant,
         };
     }
 }

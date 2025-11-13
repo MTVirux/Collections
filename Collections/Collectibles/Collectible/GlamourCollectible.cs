@@ -59,7 +59,7 @@ public class GlamourCollectible : Collectible<ItemAdapter>, ICreateable<GlamourC
             ImGui.Text("Shares Model with: ");
             foreach(ItemAdapter sharedModel in sharedModels)
             {
-                ImGui.Image(IconHandler.getIcon(sharedModel.Icon).GetWrapOrEmpty().Handle, new Vector2(40, 40));
+                ImGui.Image(IconHandler.GetIcon(sharedModel.Icon).GetWrapOrEmpty().Handle, new Vector2(40, 40));
                 ImGui.SameLine();
                 ImGui.Text($"{sharedModel.Name} ({sharedModel.DyeCount} dye slots)");
             }
