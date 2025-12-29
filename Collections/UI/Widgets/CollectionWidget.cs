@@ -1,3 +1,6 @@
+using System.Drawing;
+using Dalamud.Interface.Colors;
+
 namespace Collections;
 
 public class CollectionWidget
@@ -41,6 +44,7 @@ public class CollectionWidget
         }
 
         drawItemCount = 0;
+        iconSize = ImGui.GetFontSize() * 4;
         var iconsPerRow = GetIconsPerRow();
         // sanity check
         if (iconsPerRow < 1) return;
@@ -262,15 +266,15 @@ public class CollectionWidget
         // for debouncing, prevents interaction and favorite at the same time.
         bool interact = false;
         bool debounce = false;
+
+        // to properly draw everything
         var icon = collectible.GetIconLazy();
 
-        ImGui.SetItemAllowOverlap();
-
         var tint = collectible.GetIsObtained() ? defaultTint : ColorsPalette.GREY2;
-
         if (ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new Vector2(iconSize, iconSize), default, new Vector2(1f, 1f), -1, default, tint))
         {
         }
+
         if (ImGui.IsItemClicked())
         {
             interact = true;
@@ -303,7 +307,8 @@ public class CollectionWidget
 
         // Favorite
         var isFavorite = collectible.IsFavorite();
-        UiHelper.IconButtonWithOffset(drawItemCount, FontAwesomeIcon.Star, 33, 0, ref isFavorite, 0.9f);
+        ImGui.SetItemAllowOverlap();
+        UiHelper.IconButtonWithOffset(drawItemCount, FontAwesomeIcon.Star, ImGui.ImGuiStyle().ItemSpacing.X * 2 + ImGui.GetFontSize(), 0, ref isFavorite, 1.0f);
         if(ImGui.IsItemClicked()) {
             debounce = true;
         }
@@ -332,17 +337,16 @@ public class CollectionWidget
             }
         }
         
-        // Mimicks the official FFXIV Yellow checkmark1
+        // Mimicks the official FFXIV Yellow checkmark
         var obtained = collectible.GetIsObtained();
-        // shadow
-        UiHelper.IconButtonWithOffset(drawItemCount, FontAwesomeIcon.Check, 32, -48, ref obtained, 1.1f, new Vector4(1f, .741f, .188f, 1).Darken(.7f), ColorsPalette.BLACK.WithAlpha(0));
         // color
-        UiHelper.IconButtonWithOffset(drawItemCount, FontAwesomeIcon.Check, 33, -48, ref obtained, 1.0f, new Vector4(1f, .741f, .188f, 1), ColorsPalette.BLACK.WithAlpha(0));
+        // UiHelper.IconButtonWithOffset(drawItemCount, FontAwesomeIcon.Check, iconSize, 0, ref obtained, 1.0f, new Vector4(1f, .741f, .188f, 1), ColorsPalette.BLACK.WithAlpha(0));
     }
 
     private int GetIconsPerRow()
     {
-        return (int)Math.Floor((UiHelper.GetLengthToRightOfWindow() - UiHelper.UnitWidth()) / (iconSize + (UiHelper.UnitWidth() * 2)));
+        // Window Size / Icon Size + ImGui Item Padding x 2;
+        return (int)Math.Floor((ImGui.GetWindowWidth() - ImGui.GetCursorPosX()) / (iconSize + (ImGui.ImGuiStyle().ItemSpacing.X * 2)));
     }
 
     public bool IsFiltered(ICollectible collectible)

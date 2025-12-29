@@ -1,3 +1,4 @@
+using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 
@@ -65,7 +66,7 @@ public class MountCollectible : Collectible<Mount>, ICreateable<MountCollectible
 
     public override void DrawAdditionalTooltip()
     {
-        ImGui.TextWrapped(ExcelCache<MountTransient>.GetSheet().GetRow(ExcelRow.RowId).Value.DescriptionEnhanced.ToString());
+        // ImGui.Text(ExcelCache<MountTransient>.GetSheet().GetRow(ExcelRow.RowId).Value.DescriptionEnhanced.ToString());
         var pic = Services.TextureProvider.GetFromGameIcon(new GameIconLookup((uint)GetImageId()));
         ImGui.Image(pic.GetWrapOrEmpty().Handle, pic.GetWrapOrEmpty().Size * 0.75f);
     }

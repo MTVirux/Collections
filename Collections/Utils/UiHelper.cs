@@ -1,3 +1,4 @@
+using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
 
 namespace Collections;
@@ -40,8 +41,8 @@ public class UiHelper
     {
         var cursorX = ImGui.GetCursorPos().X;
         var windowX = ImGui.GetWindowSize().X;
-        var unitX = ImGui.CalcTextSize(" ").X;
-        return windowX - cursorX - unitX;
+        // var unitX = ImGui.CalcTextSize(" ").X;
+        return windowX - cursorX;
     }
 
     public static float GetScrollPosition()
@@ -123,12 +124,12 @@ public class UiHelper
         ImGuiComponents.IconButtonWithText(fontAwesomeIcon, text, null, buttonColor, buttonColor);
     }
 
-    public static void IconButtonWithOffset(int id, FontAwesomeIcon fontAwesomeIcon, int Xoffset, int Yoffset, ref bool state, float scale)
+    public static void IconButtonWithOffset(int id, FontAwesomeIcon fontAwesomeIcon, float Xoffset, float Yoffset, ref bool state, float scale)
     {
-        IconButtonWithOffset(id, fontAwesomeIcon, Xoffset, Yoffset, ref state, scale, ColorsPalette.YELLOW, ColorsPalette.GREY);
+        IconButtonWithOffset(id, fontAwesomeIcon, Xoffset, Yoffset, ref state, scale, ImGuiColors.DalamudYellow, ImGuiColors.DalamudGrey);
     }
 
-    public static void IconButtonWithOffset(int id, FontAwesomeIcon fontAwesomeIcon, int Xoffset, int Yoffset, ref bool state, float scale, Vector4 enabledColor, Vector4 disabledColor)
+    public static void IconButtonWithOffset(int id, FontAwesomeIcon fontAwesomeIcon, float Xoffset, float Yoffset, ref bool state, float scale, Vector4 enabledColor, Vector4 disabledColor)
     {
         // ID
         ImGui.PushID(id);
