@@ -1,4 +1,3 @@
-using Dalamud.Interface.Textures;
 using System.IO;
 
 namespace Collections;
@@ -8,10 +7,11 @@ public class EquipSlotsWidget
     public EquipSlot activeEquipSlot { get; set; } = EquipSlot.Body;
     public Dictionary<EquipSlot, PaletteWidget> paletteWidgets = new();
 
-    private Vector2 activeEquipSlotRectSize = new(60.2f, 60.2f);
-    private Vector2 equipSlotBackgroundRectSize = new(56, 56);
-    private Vector2 paletteWidgetButtonOffset = new(-34, 35);
+    private Vector2 activeEquipSlotRectSize = new(50.2f, 50.2f);
+    private Vector2 equipSlotBackgroundRectSize = new(46, 46);
+    private Vector2 paletteWidgetButtonOffset = new(-25, 34);
     private Vector4 paletteWidgetButtonDefaultColor = ColorsPalette.WHITE;
+    private Vector2 brushIconRectSize = new(5, 5);
 
     public GlamourSet currentGlamourSet { get; set; }
     private Dictionary<EquipSlot, bool> hoveredPaletteButton = new();
@@ -47,13 +47,13 @@ public class EquipSlotsWidget
             PlatesExecutor.SetPlateItem(glamourItem.GetCollectible().ExcelRow, (byte)glamourItem.Stain0Id, (byte)glamourItem.Stain1Id, equipSlot);
         }
     }
-    
+
     public unsafe void Draw()
     {
         DrawButtons();
 
         var bgColor = *ImGui.GetStyleColorVec4(ImGuiCol.WindowBg);
-        for(int i = 0; i < Services.DataProvider.SupportedEquipSlots.Count; i++)
+        for (int i = 0; i < Services.DataProvider.SupportedEquipSlots.Count; i++)
         {
             EquipSlot equipSlot = Services.DataProvider.SupportedEquipSlots[i];
             // i+1 here so that we only do this every odd item
@@ -91,7 +91,7 @@ public class EquipSlotsWidget
                 icon = equipSlotIcons[equipSlot];
 
             // Draw equip slot buttons
-            if (ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new Vector2(48, 50)))
+            if (ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new Vector2(38, 40)))
             {
                 SetEquipSlot(equipSlot);
             }
@@ -131,10 +131,10 @@ public class EquipSlotsWidget
 
             // Draw Palette Widget button
             var paletteButtonColor = paletteWidgets[equipSlot].ActiveStainPrimary.RowId == 0 ?
-                paletteWidgetButtonDefaultColor : paletteWidgets[equipSlot].ActiveStainPrimary.VecColor;
+                paletteWidgetButtonDefaultColor : paletteWidgets[equipSlot].ActiveStainPrimary.VecColor();
             ImGui.PushStyleColor(ImGuiCol.Text, paletteButtonColor);
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0, 0, 0, 0));
-            ImGuiComponents.IconButton(FontAwesomeIcon.PaintBrush);
+            ImGuiComponents.IconButton(FontAwesomeIcon.PaintBrush, brushIconRectSize);
             ImGui.PopStyleColor();
             ImGui.PopStyleColor();
 
@@ -227,12 +227,12 @@ public class EquipSlotsWidget
     {
         // reset items
         currentGlamourSet.Items.Clear();
-        
+
         // add items in outfit
-        List<ItemAdapter> items = Services.ItemFinder.ItemsInOutfit(args.Collectible.ExcelRow.RowId);
+        List<Item> items = Services.ItemFinder.ItemsInOutfit(args.Collectible.ExcelRow.RowId);
         foreach (var item in items)
         {
-            currentGlamourSet.SetItem(item, paletteWidgets[item.EquipSlot].ActiveStainPrimary.RowId, paletteWidgets[item.EquipSlot].ActiveStainSecondary.RowId);
+            currentGlamourSet.SetItem(item, paletteWidgets[item.GetEquipSlot()].ActiveStainPrimary.RowId, paletteWidgets[item.GetEquipSlot()].ActiveStainSecondary.RowId);
         }
     }
 
@@ -241,7 +241,7 @@ public class EquipSlotsWidget
         if (Services.Configuration.SeparatePreviewAndApply && !args.ApplyToSlot) return;
         // Update current glamour set
         var item = args.Collectible.ExcelRow;
-        currentGlamourSet.SetItem(item, paletteWidgets[item.EquipSlot].ActiveStainPrimary.RowId, paletteWidgets[item.EquipSlot].ActiveStainSecondary.RowId, equipSlot: activeEquipSlot);
+        currentGlamourSet.SetItem(item, paletteWidgets[item.GetEquipSlot()].ActiveStainPrimary.RowId, paletteWidgets[item.GetEquipSlot()].ActiveStainSecondary.RowId, equipSlot: activeEquipSlot);
     }
 
     public void OnPublish(DyeChangeEventArgs args)

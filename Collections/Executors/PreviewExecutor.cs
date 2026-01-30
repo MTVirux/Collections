@@ -36,13 +36,16 @@ public unsafe class PreviewExecutor
     // Use when dye event is applied to a slot that doesn't match collectible.
     // more expensive than through using the collectible.
     public void PreviewWithTryOnRestrictions(EquipSlot equipSlot, uint stain0Id, uint stain1Id, bool tryOn)
-    { 
-        // separate process for TryOn
+    {
+
+        var itemSheet = ExcelCache<Item>.GetSheet()!;
+        // if(stain0Id < 0) stain0Id = invSlot->Stains[0];
+        // if(stain1Id < 0) stain0Id = invSlot->Stains[1];
         var tryOnOverride = tryOn; // no need to worry about already equipped mog items
         if (tryOnOverride)
         {
             var invSlot = InventoryManager.Instance()->GetInventorySlot(InventoryType.EquippedItems, EquipSlotConverter.EquipSlotToInventorySlot(equipSlot));
-            var item = ExcelCache<ItemAdapter>.GetSheet().GetRow(invSlot->GlamourId != 0 ? invSlot->GlamourId : invSlot->ItemId);
+            var item = ExcelCache<Item>.GetSheet().GetRow(invSlot->GlamourId != 0 ? invSlot->GlamourId : invSlot->ItemId);
             TryOn(item.Value.RowId, (byte)stain0Id, (byte)stain1Id);
         }
         else
@@ -65,13 +68,13 @@ public unsafe class PreviewExecutor
         AgentTryon.TryOn(0xFF, item, stain0, stain1, item, false);
     }
 
-    private void Preview(ItemAdapter item, byte stain0Id = 0, byte stain1Id = 0, bool storePreviewHistory = true, EquipSlot? equipSlot = null)
+    private void Preview(Item item, byte stain0Id = 0, byte stain1Id = 0, bool storePreviewHistory = true, EquipSlot? equipSlot = null)
     {
         Dev.Log($"Previewing {item.Name}");
         if (storePreviewHistory)
-            previewHistory.Add(equipSlot ?? item.EquipSlot);
+            previewHistory.Add(equipSlot ?? item.GetEquipSlot());
             
-        if (item.EquipSlot == EquipSlot.MainHand || item.EquipSlot == EquipSlot.OffHand || equipSlot == EquipSlot.MainHand || equipSlot == EquipSlot.OffHand)
+        if (item.GetEquipSlot() == EquipSlot.MainHand || item.GetEquipSlot() == EquipSlot.OffHand || equipSlot == EquipSlot.MainHand || equipSlot == EquipSlot.OffHand)
         {
             PreviewWeapon(item, stain0Id, stain1Id);
         }
@@ -88,7 +91,7 @@ public unsafe class PreviewExecutor
             return;
         }
 
-        var itemSheet = ExcelCache<ItemAdapter>.GetSheet()!;
+        var itemSheet = ExcelCache<Item>.GetSheet()!;
         var container = InventoryManager.Instance()->GetInventoryContainer(InventoryType.EquippedItems);
 
         // Reset slots
@@ -102,7 +105,7 @@ public unsafe class PreviewExecutor
         {
             var invSlot = container->GetInventorySlot(i);
             var item = itemSheet.GetRow(invSlot->GlamourId != 0 ? invSlot->GlamourId : invSlot->ItemId);
-            if (previewHistory.Contains(item.Value.EquipSlot))
+            if (previewHistory.Contains(item.Value.GetEquipSlot()))
                 Preview(item.Value, invSlot->Stains[0], invSlot->Stains[1], false);
         }
         previewHistory.Clear();
@@ -137,10 +140,10 @@ public unsafe class PreviewExecutor
         previewHistory.Add(equipSlot);
     }
 
-    private unsafe void PreviewEquipment(ItemAdapter item, byte stain0Id, byte? stain1Id, EquipSlot? slot = null)
+    private unsafe void PreviewEquipment(Item item, byte stain0Id, byte? stain1Id, EquipSlot? slot = null)
     {
         var equipmentModelId = GetEquipmentModelId(item, stain0Id, stain1Id);
-        PreviewEquipment(slot ?? item.EquipSlot, equipmentModelId);
+        PreviewEquipment(slot ?? item.GetEquipSlot(), equipmentModelId);
     }
 
     private unsafe void PreviewEquipment(EquipSlot equipSlot, EquipmentModelId equipmentModelId)
@@ -149,10 +152,10 @@ public unsafe class PreviewExecutor
         Character->DrawData.LoadEquipment(equipmentSlot, &equipmentModelId, true);
     }
 
-    private void PreviewWeapon(ItemAdapter item, byte stain0Id, byte? stain1Id)
+    private void PreviewWeapon(Item item, byte stain0Id, byte? stain1Id)
     {
         var weaponModelId = GetWeaponModelId(item, stain0Id, stain1Id);
-        PreviewWeapon(item.EquipSlot, weaponModelId);
+        PreviewWeapon(item.GetEquipSlot(), weaponModelId);
     }
 
     private void PreviewWeapon(EquipSlot equipSlot, WeaponModelId weaponModelId)
@@ -161,7 +164,7 @@ public unsafe class PreviewExecutor
         Character->DrawData.LoadWeapon(weaponSlot, weaponModelId, 0, 0, 0, 0);
     }
 
-    private EquipmentModelId GetEquipmentModelId(ItemAdapter item, byte stain0Id, byte? stain1Id)
+    private EquipmentModelId GetEquipmentModelId(Item item, byte stain0Id, byte? stain1Id)
     {
         return new EquipmentModelId()
         {
@@ -183,7 +186,7 @@ public unsafe class PreviewExecutor
         };
     }
 
-    private WeaponModelId GetWeaponModelId(ItemAdapter item, byte stain0Id, byte? stain1Id)
+    private WeaponModelId GetWeaponModelId(Item item, byte stain0Id, byte? stain1Id)
     {
         return new WeaponModelId()
         {
