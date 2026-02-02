@@ -98,7 +98,7 @@
     <ItemGroup>
         <PackageReference Include="CSVFile" Version="3.2.1" />
         <PackageReference Include="CsvHelper" Version="30.0.1" />
-        <PackageReference Include="LuminaSupplemental.Excel" Version="4.0.1" />
+        <PackageReference Include="LuminaSupplemental.Excel" Version="4.1.7" />
         <Reference Include="FFXIVClientStructs">
             <HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
             <Private>false</Private>

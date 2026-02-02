@@ -30,15 +30,6 @@ public class EquipSlotsWidget
         eventService.Subscribe<DyeChangeEvent, DyeChangeEventArgs>(OnPublish);
     }
 
-    private void DrawButtons()
-    {
-        //ImGui.PushStyleColor(ImGuiCol.Button, Services.WindowsInitializer.MainWindow.originalButtonColor);
-        //ImGui.Button("Reapply Preview");
-        //ImGui.Button("Reset Preview");
-        //ImGui.Button("Add to Plate");
-        //ImGui.PopStyleColor();
-    }
-
     private void ApplyGlamourSetToPlate()
     {
         // TODO indication which items exist in Dresser
@@ -50,8 +41,10 @@ public class EquipSlotsWidget
 
     public unsafe void Draw()
     {
-        DrawButtons();
-
+        // max size of a slot if active. 
+        float slotSize = ImGui.GetFontSize() * 2.9f;
+        // ratio to scale slot icons by
+        const float iconScale = .916f;
         var bgColor = *ImGui.GetStyleColorVec4(ImGuiCol.WindowBg);
         for (int i = 0; i < Services.DataProvider.SupportedEquipSlots.Count; i++)
         {
@@ -62,15 +55,15 @@ public class EquipSlotsWidget
             var origPos = ImGui.GetCursorPos();
             if (activeEquipSlot == equipSlot)
             {
-                ImGui.SetCursorPos(new Vector2(origPos.X - 1.8f, origPos.Y - 1.8f));
-                ImGui.ColorButton(equipSlot.ToString(), ColorsPalette.BLUE, ImGuiColorEditFlags.NoTooltip, activeEquipSlotRectSize);
+                ImGui.SetCursorPos(new Vector2(origPos.X - ImGui.GetFontSize() * .11f, origPos.Y - ImGui.GetFontSize() * .11f));
+                ImGui.ColorButton(equipSlot.ToString(), ColorsPalette.BLUE, ImGuiColorEditFlags.NoTooltip, new Vector2(slotSize, slotSize));
                 ImGui.SetCursorPos(origPos);
             }
             ImGui.SetCursorPos(origPos);
 
             // Draw bg rect over all equip slots
-            origPos = ImGui.GetCursorPos();
-            ImGui.ColorButton(equipSlot.ToString(), bgColor, ImGuiColorEditFlags.NoTooltip, equipSlotBackgroundRectSize);
+            ImGui.ColorButton(equipSlot.ToString(), bgColor, ImGuiColorEditFlags.NoTooltip, new Vector2(slotSize, slotSize) * iconScale);
+            var finalCursorPos = ImGui.GetCursorPos();
             ImGui.SetCursorPos(origPos);
 
             ImGui.SetItemAllowOverlap();
@@ -91,7 +84,10 @@ public class EquipSlotsWidget
                 icon = equipSlotIcons[equipSlot];
 
             // Draw equip slot buttons
-            if (ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new Vector2(38, 40)))
+            // overwrite custom ImGui frame padding so it's actually a square (default is (4,3))
+            const int equipSlotFramePadding = 2;
+            // adjust icon to scale correctly based on 
+            if (ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new Vector2(slotSize - equipSlotFramePadding * 2, slotSize - equipSlotFramePadding * 2) * iconScale, equipSlotFramePadding))
             {
                 SetEquipSlot(equipSlot);
             }
@@ -127,14 +123,14 @@ public class EquipSlotsWidget
             // Set cursor on bottom right to draw Palette Widget button
             ImGui.SameLine();
             ImGui.SetItemAllowOverlap(); // Makes this button take precedence
-            ImGui.SetCursorPos(new Vector2(ImGui.GetCursorPos().X + paletteWidgetButtonOffset.X, ImGui.GetCursorPos().Y + paletteWidgetButtonOffset.Y));
+            ImGui.SetCursorPos(origPos + new Vector2(slotSize - ImGui.GetFontSize(), slotSize - ImGui.GetFontSize()) * 0.9f);
 
             // Draw Palette Widget button
             var paletteButtonColor = paletteWidgets[equipSlot].ActiveStainPrimary.RowId == 0 ?
                 paletteWidgetButtonDefaultColor : paletteWidgets[equipSlot].ActiveStainPrimary.VecColor();
             ImGui.PushStyleColor(ImGuiCol.Text, paletteButtonColor);
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0, 0, 0, 0));
-            ImGuiComponents.IconButton(FontAwesomeIcon.PaintBrush, brushIconRectSize);
+            ImGuiComponents.IconButton(FontAwesomeIcon.PaintBrush, new Vector2(20, 20));
             ImGui.PopStyleColor();
             ImGui.PopStyleColor();
 
@@ -169,6 +165,7 @@ public class EquipSlotsWidget
             {
                 hoveredPaletteButton[equipSlot] = false;
             }
+            ImGui.SetCursorPos(finalCursorPos);
         }
     }
 

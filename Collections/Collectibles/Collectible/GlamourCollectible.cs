@@ -53,11 +53,11 @@ public class GlamourCollectible : Collectible<Item>, ICreateable<GlamourCollecti
     public override unsafe void DrawAdditionalTooltip()
     {
         base.DrawAdditionalTooltip();
-        List<ItemAdapter> sharedModels = ExcelCache<ItemAdapter>.GetSheet().Where(c => c.ModelMain == ExcelRow.ModelMain && c.EquipSlot == ExcelRow.EquipSlot && c.RowId != ExcelRow.RowId).ToList();
+        List<Item> sharedModels = ExcelCache<Item>.GetSheet().Where(c => c.ModelMain == ExcelRow.ModelMain && c.GetEquipSlot() == ExcelRow.GetEquipSlot() && c.RowId != ExcelRow.RowId).ToList();
         if(sharedModels.Count > 0)
         {
             ImGui.Text("Shares Model with: ");
-            foreach(ItemAdapter sharedModel in sharedModels)
+            foreach(Item sharedModel in sharedModels)
             {
                 ImGui.Image(IconHandler.GetIcon(sharedModel.Icon).GetWrapOrEmpty().Handle, new Vector2(40, 40));
                 ImGui.SameLine();
