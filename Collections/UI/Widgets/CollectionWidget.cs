@@ -29,6 +29,7 @@ public class CollectionWidget
         {
             cachedFilters = filterOptions;
         }
+        iconSize = ImGui.GetFontSize() * 4;
     }
 
     private int obtainedState = 0;
@@ -42,9 +43,13 @@ public class CollectionWidget
         {
             DrawFilters();
         }
+        // separate to prevent constant reassignment
+        if(iconSize != ImGui.GetFontSize() * 4)
+        {
+            iconSize = ImGui.GetFontSize() * 4;
+        }
 
         drawItemCount = 0;
-        iconSize = ImGui.GetFontSize() * 4;
         var iconsPerRow = GetIconsPerRow();
         // sanity check
         if (iconsPerRow < 1) return;
@@ -296,10 +301,13 @@ public class CollectionWidget
         // Details on click
         if (ImGui.BeginPopupContextItem($"click-glam-item##{collectible.GetHashCode()}", ImGuiPopupFlags.MouseButtonRight))
         {
-            if(ImGui.Button("Apply to Glamour Slot"))
+            if(collectible.GetType() == typeof(GlamourCollectible))
             {
-                Dev.Log("Publishing GlamourItemChangeEvent");
-                EventService.Publish<GlamourItemChangeEvent, GlamourItemChangeEventArgs>(new GlamourItemChangeEventArgs((GlamourCollectible)collectible, true));
+                if(ImGui.Button("Apply to Glamour Slot"))
+                {
+                    Dev.Log("Publishing GlamourItemChangeEvent");
+                    EventService.Publish<GlamourItemChangeEvent, GlamourItemChangeEventArgs>(new GlamourItemChangeEventArgs((GlamourCollectible)collectible, true));
+                }
             }
             CollectibleTooltipWidget.DrawItemTooltip(collectible);
             ImGui.EndPopup();
@@ -308,8 +316,9 @@ public class CollectionWidget
         // Favorite
         var isFavorite = collectible.IsFavorite();
         ImGui.SetItemAllowOverlap();
-        UiHelper.IconButtonWithOffset(drawItemCount, FontAwesomeIcon.Star, ImGui.ImGuiStyle().ItemSpacing.X * 2 + ImGui.GetFontSize(), 0, ref isFavorite, 1.0f);
-        if(ImGui.IsItemClicked()) {
+        UiHelper.IconButtonWithOffset(drawItemCount, FontAwesomeIcon.Star, ImGui.GetStyle().ItemSpacing.X * 2 + ImGui.GetFontSize(), 0, ref isFavorite, 1.0f);
+        if(ImGui.IsItemClicked())
+        {
             debounce = true;
         }
         if (isFavorite != collectible.IsFavorite())
@@ -341,12 +350,13 @@ public class CollectionWidget
         var obtained = collectible.GetIsObtained();
         // color
         // UiHelper.IconButtonWithOffset(drawItemCount, FontAwesomeIcon.Check, iconSize, 0, ref obtained, 1.0f, new Vector4(1f, .741f, .188f, 1), ColorsPalette.BLACK.WithAlpha(0));
+        UiHelper.IconButtonWithOffset(drawItemCount, FontAwesomeIcon.Check, ImGui.GetStyle().ItemSpacing.X * 2 + ImGui.GetFontSize(), -iconSize + ImGui.GetFontSize(), ref obtained, 1.0f, new Vector4(1f, .741f, .188f, 1), ColorsPalette.BLACK.WithAlpha(0));
     }
 
     private int GetIconsPerRow()
     {
         // Window Size / Icon Size + ImGui Item Padding x 2;
-        return (int)Math.Floor((ImGui.GetWindowWidth() - ImGui.GetCursorPosX()) / (iconSize + (ImGui.ImGuiStyle().ItemSpacing.X * 2)));
+        return (int)Math.Floor((ImGui.GetWindowWidth() - ImGui.GetCursorPosX()) / (iconSize + (ImGui.GetStyle().ItemSpacing.X * 2)));
     }
 
     public bool IsFiltered(ICollectible collectible)

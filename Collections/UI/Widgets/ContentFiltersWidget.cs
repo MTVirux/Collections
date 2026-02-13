@@ -6,7 +6,6 @@ public class ContentFiltersWidget
     public Dictionary<SourceCategory, bool> Filters = new();
 
     private Vector2 iconSize = new(25, 25);
-    private const int WidgetWidth = 31;
 
     private Dictionary<SourceCategory, ISharedImmediateTexture> icons = new();
     private Dictionary<SourceCategory, int> contentTypesToIconId = new()
@@ -47,10 +46,7 @@ public class ContentFiltersWidget
 
     public void Draw()
     {
-        // Invisible button to set width for the table, otherwise it is cutoff by the width of it's cell (which is dictated by EquipSlotWidget above it)
-        ImGui.InvisibleButton("invisible", new Vector2(UiHelper.UnitWidth() * WidgetWidth, 1));
-
-        if (ImGui.BeginTable($"content-filters", columns, ImGuiTableFlags.SizingFixedFit | ImGuiTableFlags.ScrollY))
+        if (ImGui.BeginTable($"content-filters", columns, ImGuiTableFlags.ScrollY))
         {
             var i = -1;
             foreach (var (collectibleSourceType, iconId) in contentTypesToIconId)
@@ -69,7 +65,6 @@ public class ContentFiltersWidget
 
                 // Draw cell
                 DrawCell(collectibleSourceType);
-
             }
             ImGui.EndTable();
         }
@@ -80,11 +75,11 @@ public class ContentFiltersWidget
         // Draw button as a group
         UiHelper.GroupWithMinWidth(() =>
         {
-            ImGui.Image(icons[collectibleSourceCategory].GetWrapOrEmpty().Handle, iconSize);
+            ImGui.Image(icons[collectibleSourceCategory].GetWrapOrEmpty().Handle, iconSize * (ImGui.GetFontSize() / 16));
             ImGui.SameLine();
             ImGui.Text(collectibleSourceCategory.GetEnumName().ToSentence().TrimStart(' '));
             //ImGui.Text(hint1);
-        }, ImGui.GetContentRegionAvail().X);
+        }, ImGui.GetColumnWidth());
 
         // Left click to set filter
         if (ImGui.IsItemClicked(ImGuiMouseButton.Left))

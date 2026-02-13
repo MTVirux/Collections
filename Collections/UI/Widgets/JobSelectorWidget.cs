@@ -5,7 +5,7 @@ public class JobSelectorWidget
     public Dictionary<ClassJob, bool> Filters;
 
     private const int JobIconScale = 7;
-    private const int IconSize = 25;
+    private int iconSize = 25;
     private Vector2 overrideItemSpacing = new(2, 1);
 
     // Specific filter for "All Classes" items
@@ -63,7 +63,7 @@ public class JobSelectorWidget
                 if (icon != null)
                 {
                     // Button
-                    UiHelper.ImageToggleButton(icon, new Vector2(IconSize, IconSize), Filters[job]);
+                    UiHelper.ImageToggleButton(icon, new Vector2(iconSize, iconSize) * (ImGui.GetFontSize() / 14), Filters[job]);
 
                     // Left click - Switch to selection
                     if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
@@ -87,7 +87,7 @@ public class JobSelectorWidget
             ImGui.Text("");
         }
         // "All Classes" Icon Button
-        UiHelper.ImageToggleButton(IconHandler.GetIcon(62522), new Vector2(IconSize, IconSize), allClasses);
+        UiHelper.ImageToggleButton(IconHandler.GetIcon(62522), new Vector2(iconSize, iconSize) * (ImGui.GetFontSize() / 14), allClasses);
         if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
         {
             var newState = IsAllActive() ? true : !allClasses;

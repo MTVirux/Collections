@@ -1,3 +1,5 @@
+using Lumina.Extensions;
+
 namespace Collections;
 
 public class EventDataGenerator : BaseDataGenerator<string>
@@ -34,6 +36,7 @@ public class EventDataGenerator : BaseDataGenerator<string>
         {"FesHl", 109}, // Halloween
         {"FesXm", 110}, // Xmas
     };
+
     private static readonly string FileName = "ItemIdToEvent.csv";
 
     // Helper function, gets more localized event name for quests based on Id
@@ -87,6 +90,18 @@ public class EventDataGenerator : BaseDataGenerator<string>
                 {
                     if(!data.ContainsKey(item.RowId))
                         AddEntry(item.RowId, GetLocEventName(entry));
+                }
+                // Event shops associated with said events
+                foreach(var shop in ExcelCache<SpecialShop>.GetSheet().Where(shop => shop.RequiredFestival.RowId == entry.Festival.RowId))
+                {
+                    foreach(var shopEntry in shop.Item)
+                    {
+                        foreach(var item in shopEntry.ReceiveItems)
+                        {
+                            if(!data.ContainsKey(item.Item.RowId))
+                                AddEntry(item.Item.RowId, GetLocEventName(entry));
+                        }
+                    }
                 }
             }
         }

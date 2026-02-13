@@ -245,8 +245,11 @@ public class EquipSlotsWidget
     {
         var glamourItem = currentGlamourSet.GetItem(args.EquipSlot);
         var equipSlot = args.EquipSlot;
+        // Update currentGlamourSet
+        currentGlamourSet.GetItem(equipSlot)?.Stain0Id = paletteWidgets[equipSlot].ActiveStainPrimary.RowId;
+        currentGlamourSet.GetItem(equipSlot)?.Stain1Id = paletteWidgets[equipSlot].ActiveStainSecondary.RowId;
         // If Dye changed for empty equip slot - use the characters equipped item
-        if (glamourItem is null)
+        if (glamourItem is null || Configuration.GetConfig().SeparatePreviewAndApply)
         {
             Services.PreviewExecutor.PreviewWithTryOnRestrictions(
                 equipSlot,
@@ -254,21 +257,17 @@ public class EquipSlotsWidget
                 paletteWidgets[equipSlot].ActiveStainSecondary.RowId,
                 Services.Configuration.ForceTryOn
                 );
-            return;
         }
-
-
-        // Update currentGlamourSet
-        currentGlamourSet.GetItem(equipSlot).Stain0Id = paletteWidgets[equipSlot].ActiveStainPrimary.RowId;
-        currentGlamourSet.GetItem(equipSlot).Stain1Id = paletteWidgets[equipSlot].ActiveStainSecondary.RowId;
-
-        // Refresh Preview
-        Services.PreviewExecutor.PreviewWithTryOnRestrictions(
-            glamourItem.GetCollectible(),
-            paletteWidgets[equipSlot].ActiveStainPrimary.RowId,
-            paletteWidgets[equipSlot].ActiveStainSecondary.RowId,
-            Services.Configuration.ForceTryOn
+        else
+        {
+            // Refresh Preview
+            Services.PreviewExecutor.PreviewWithTryOnRestrictions(
+                glamourItem.GetCollectible(),
+                paletteWidgets[equipSlot].ActiveStainPrimary.RowId,
+                paletteWidgets[equipSlot].ActiveStainSecondary.RowId,
+                Services.Configuration.ForceTryOn
             );
+        }
     }
 }
 

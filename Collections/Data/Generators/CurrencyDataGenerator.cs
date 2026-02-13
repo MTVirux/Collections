@@ -12,29 +12,16 @@ public class CurrencyDataGenerator
         { 21067, SourceCategory.PvP }, // Wolf Collar
         { 36656, SourceCategory.PvP }, // Trophy Crystals
         { 30341, SourceCategory.Duty }, // Faux Leaves
-        { 10310, SourceCategory.Scrips }, // Blue gatherers scrip
-        { 10311, SourceCategory.Scrips }, // Red gatherers scrip
-        { 17834, SourceCategory.Scrips }, // Yellow gatherers scrip
-        { 25200, SourceCategory.Scrips }, // White gatherers scrip
-        { 33914, SourceCategory.Scrips }, // Purple gatherers scrip
-        { 10308, SourceCategory.Scrips }, // Blue gatherers scrip
-        { 10309, SourceCategory.Scrips }, // Red gatherers scrip
-        { 17833, SourceCategory.Scrips }, // Yellow gatherers scrip
-        { 25199, SourceCategory.Scrips }, // White gatherers scrip
-        { 33913, SourceCategory.Scrips }, // Purple gatherers scrip
+        
         { 00027, SourceCategory.TheHunt }, // Allied Seal
         { 10307, SourceCategory.TheHunt }, // Centurio Seal
         { 26533, SourceCategory.TheHunt }, // Sack of nuts
         { 26807, SourceCategory.Fate}, // Bicolor gems
         { 00029, SourceCategory.MGP }, // MGP
         { 41629, SourceCategory.MGP}, // MGF (fall guys)
-        { 37549, SourceCategory.IslandSanctuary }, // Seafarer's Cowrie
-        { 37550, SourceCategory.IslandSanctuary }, // Islander's Cowrie
         { 28063, SourceCategory.RestorationZone}, // Skybuilder Scrips
-        { 45690, SourceCategory.RestorationZone}, // Cosmocredit
         { 47343, SourceCategory.RestorationZone}, // Phaenna token booklet
         { 47594, SourceCategory.RestorationZone}, // Phaenna exploration token 
-        { 48146, SourceCategory.RestorationZone}, // Phaenna credit
         // Occult Crescent
         { 47868, SourceCategory.FieldOperations}, // Sanguinite
     };
@@ -64,8 +51,17 @@ public class CurrencyDataGenerator
         var ItemSheet = ExcelCache<Item>.GetSheet();
         foreach (var item in ItemSheet)
         {
+            if(ItemIdToSourceCategory.ContainsKey(item.RowId)) continue;
             switch (item.ItemSortCategory.RowId)
             {
+                case 0:
+                    // Cosmic Fortune credits (not booklets)
+                    if(item.FilterGroup == 55 || item.FilterGroup == 56)
+                        ItemIdToSourceCategory[item.RowId] = SourceCategory.RestorationZone;
+                    // Island Sanctuary Cowries
+                    else if(item.FilterGroup == 47)
+                        ItemIdToSourceCategory[item.RowId] = SourceCategory.IslandSanctuary;
+                    break;
                 // Deep Dungeon Currency items
                 case 41:
                     ItemIdToSourceCategory[item.RowId] = SourceCategory.DeepDungeon;
@@ -78,10 +74,24 @@ public class CurrencyDataGenerator
                     break;
                 // FATEs
                 case 55: 
-                    // filters out non-fate currencies
+                    // FATE tokens
                     if(item.Unknown4 == 24000)
                         ItemIdToSourceCategory[item.RowId] = SourceCategory.Fate;
+                    // EX Totems + Chaotic
+                    else if(item.Unknown4 == 10000 || item.Unknown4 == 3000)
+                        ItemIdToSourceCategory[item.RowId] = SourceCategory.Duty;
+                    // Crafter/Gatherer tokens
+                    else if(item.Unknown4 == 17000)
+                        ItemIdToSourceCategory[item.RowId] = SourceCategory.Scrips;
+                    // // Moogle Tomestone Events
+                    // else if(item.Unknown4 == 22000 || item.Unknown4 == 22001)
+                    //     ItemIdToSourceCategory[item.RowId] = SourceCategory.Event;
+                    // Cosmic Exploration Booklets
+                    else if((item.Unknown4 == 0 || item.Unknown4 == 1 || item.Unknown4 == 5) && item.Lot == false)
+                        ItemIdToSourceCategory[item.RowId] = SourceCategory.RestorationZone;
+                    // Arch
                     break;
+                
             }
         }
     }
