@@ -200,6 +200,19 @@ public class DataOverrides
         // Faux
         {1770282, 1033921 },
 
+        // Really unsure how they relate, but CustomTalk#721479 and CustomTalk#721480 
+        // has all the IDs for Bicolor Gem NPCs in Shadowbringers, and the rest are in order from the starting shop.
+        // Endwalker+ uses FateShop sheet for their system. If they ever go back and change ShB to use the FateShop,
+        // should automatically update.
+        {1769957, 1027385},
+        {1769958, 1027497},
+        {1769959, 1027892},
+        {1769960, 1027665},
+        {1769961, 1027709},
+        {1769962, 1027766},
+        {1769963, 1027998},
+        {1769964, 1027538},
+
         // Sajareen - Bicolor gems
         {1770471, 1037304 },
 

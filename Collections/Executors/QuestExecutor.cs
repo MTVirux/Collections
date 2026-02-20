@@ -13,6 +13,7 @@ public class QuestExecutor
     // returns whether a quest is an event quest or not
     public static bool IsEventQuest(Quest quest)
     {
+        // Okay to keep in english as quest ID's are consistent across all language versions
         return quest.Id.ToString().StartsWith("Fes");
     }
 }

@@ -1,3 +1,5 @@
+using Dalamud.Utility;
+
 namespace Collections;
 
 public class CurrencyDataGenerator
@@ -12,7 +14,6 @@ public class CurrencyDataGenerator
         { 21067, SourceCategory.PvP }, // Wolf Collar
         { 36656, SourceCategory.PvP }, // Trophy Crystals
         { 30341, SourceCategory.Duty }, // Faux Leaves
-        
         { 00027, SourceCategory.TheHunt }, // Allied Seal
         { 10307, SourceCategory.TheHunt }, // Centurio Seal
         { 26533, SourceCategory.TheHunt }, // Sack of nuts
@@ -21,7 +22,7 @@ public class CurrencyDataGenerator
         { 41629, SourceCategory.MGP}, // MGF (fall guys)
         { 28063, SourceCategory.RestorationZone}, // Skybuilder Scrips
         { 47343, SourceCategory.RestorationZone}, // Phaenna token booklet
-        { 47594, SourceCategory.RestorationZone}, // Phaenna exploration token 
+        { 47594, SourceCategory.RestorationZone}, // Phaenna exploration token
         // Occult Crescent
         { 47868, SourceCategory.FieldOperations}, // Sanguinite
     };
@@ -49,6 +50,9 @@ public class CurrencyDataGenerator
 
         // generate currency items where we know categories
         var ItemSheet = ExcelCache<Item>.GetSheet();
+        // for scrips
+        Addon? locScripName = ExcelCache<Addon>.GetSheet().GetRow(5436);
+
         foreach (var item in ItemSheet)
         {
             if(ItemIdToSourceCategory.ContainsKey(item.RowId)) continue;
@@ -61,6 +65,12 @@ public class CurrencyDataGenerator
                     // Island Sanctuary Cowries
                     else if(item.FilterGroup == 47)
                         ItemIdToSourceCategory[item.RowId] = SourceCategory.IslandSanctuary;
+                    break;
+                case 3:
+                    // Hunt and Crafter/Gatherer Scrip items all share the same underlying data.
+                    // Assumes they don't release a weird thing where they're no longer called Scrips
+                    if(locScripName.HasValue && item.Name.ContainsText(locScripName!.Value.Text))
+                        ItemIdToSourceCategory[item.RowId] = SourceCategory.Scrips;
                     break;
                 // Deep Dungeon Currency items
                 case 41:
@@ -89,9 +99,7 @@ public class CurrencyDataGenerator
                     // Cosmic Exploration Booklets
                     else if((item.Unknown4 == 0 || item.Unknown4 == 1 || item.Unknown4 == 5) && item.Lot == false)
                         ItemIdToSourceCategory[item.RowId] = SourceCategory.RestorationZone;
-                    // Arch
                     break;
-                
             }
         }
     }

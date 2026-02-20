@@ -85,6 +85,25 @@ public class ItemKey : CollectibleKey<(Item, int)>, ICreateable<ItemKey, (Item, 
         if (dataGenerator.CraftingDataGenerator.data.TryGetValue(excelRow.RowId, out var recipes))
         {
             collectibleSources.AddRange(recipes.Select(entry => new CraftingSource(entry)));
+            // Go one level lower and add instance sources for materials
+            foreach(var recipe in recipes)
+            {
+                foreach(var item in ExcelCache<Recipe>.GetSheet().GetRow(recipe).GetValueOrDefault().Ingredient)
+                {
+                    if(!item.ValueNullable.HasValue || !dataGenerator.InstancesDataGenerator.data.TryGetValue(item.Value.RowId, out var instance))
+                        continue;
+                    // Treasure Map Exclusive ingredients
+                    // All Treasure map exclusive mat items (and voyage items) have a low sell price of 1
+                    if(item.Value.ItemSortCategory.RowId == 16 && item.Value.PriceLow == 1 && item.Value.Lot && (item.Value.PriceMid == 99999 || item.Value.Unknown4 == 2000 || item.Value.Unknown4 == 4000 || item.Value.Unknown4 == 64000))
+                        collectibleSources.AddRange(instance.Select(duty => new InstanceSource(duty)));
+                    // Raid Crafting Items
+                    if(item.Value.ItemSortCategory.RowId == 18 && item.Value.Lot)
+                        collectibleSources.AddRange(instance.Select(duty => new InstanceSource(duty)));
+                    // Tattered Orchestrion Rolls
+                    if(item.Value.ItemSortCategory.RowId == 59 && item.Value.FilterGroup == 12 && item.Value.Unknown4 == 20000)
+                        collectibleSources.AddRange(instance.Select(duty => new InstanceSource(duty)));
+                }
+            }
         }
 
         if (dataGenerator.SubmarineDataGenerator.data.TryGetValue(excelRow.RowId, out var submarines))
