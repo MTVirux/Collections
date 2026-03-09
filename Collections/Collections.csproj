@@ -1,4 +1,4 @@
-<Project Sdk="Dalamud.NET.Sdk/14.0.1">
+<Project Sdk="Dalamud.NET.Sdk/14.0.2">
     <PropertyGroup>
         <Version>1.0.2.12</Version>
         <Description>Collections</Description>
@@ -86,10 +86,10 @@
         </Content>
     </ItemGroup>
 
-    <PropertyGroup>
+    <!-- <PropertyGroup>
         <DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    </PropertyGroup>
+    </PropertyGroup> -->
 
     <PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'">
         <DalamudLibPath>$(DALAMUD_HOME)/</DalamudLibPath>
@@ -98,11 +98,8 @@
     <ItemGroup>
         <PackageReference Include="CSVFile" Version="3.2.1" />
         <PackageReference Include="CsvHelper" Version="30.0.1" />
-        <PackageReference Include="LuminaSupplemental.Excel" Version="4.1.8" />
-        <Reference Include="FFXIVClientStructs">
-            <HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
-            <Private>false</Private>
-        </Reference>
+        <PackageReference Include="LuminaSupplemental.Excel" Version="4.2.0" />
+        
         <Reference Include="Newtonsoft.Json">
             <HintPath>$(DalamudLibPath)Newtonsoft.Json.dll</HintPath>
             <Private>false</Private>
@@ -125,6 +122,10 @@
         </Reference>
         <Reference Include="Lumina.Excel">
             <HintPath>$(DalamudLibPath)Lumina.Excel.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="FFXIVClientStructs">
+            <HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
             <Private>false</Private>
         </Reference>
     </ItemGroup>

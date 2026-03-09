@@ -100,7 +100,7 @@ public class ItemKey : CollectibleKey<(Item, int)>, ICreateable<ItemKey, (Item, 
                     if(item.Value.ItemSortCategory.RowId == 18 && item.Value.Lot)
                         collectibleSources.AddRange(instance.Select(duty => new InstanceSource(duty)));
                     // Tattered Orchestrion Rolls
-                    if(item.Value.ItemSortCategory.RowId == 59 && item.Value.FilterGroup == 12 && item.Value.Unknown4 == 20000)
+                    if(item.Value.ItemSearchCategory.RowId == 80 && item.Value.Unknown4 == 20000)
                         collectibleSources.AddRange(instance.Select(duty => new InstanceSource(duty)));
                 }
             }

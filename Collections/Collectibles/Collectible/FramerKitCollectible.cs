@@ -1,4 +1,3 @@
-using Dalamud.Utility;
 using Lumina.Extensions;
 
 namespace Collections;
@@ -7,7 +6,7 @@ namespace Collections;
 // But not ALL of them have that link, and we can't garuntee that in the future either. So BannerCondition it is
 public class FramerKitCollectible : Collectible<BannerCondition>, ICreateable<FramerKitCollectible, BannerCondition>
 {
-    public new static string CollectionName => "Framer Kits";
+    public static string CollectionName => "Framer Kits";
 
     // Storing row IDs of relevant collections
     private uint PortraitBackground = 0;
@@ -39,11 +38,13 @@ public class FramerKitCollectible : Collectible<BannerCondition>, ICreateable<Fr
         // There can be multiple backgrounds from BannerCondition, but we'll only care about 1
         PlateBackground = ExcelCache<CharaCardBase>.GetSheet().Where(row => row.UnlockCondition.RowId == excelRow.RowId).ToList().FirstOrNull()?.RowId ?? 0;
         PlateBanner = ExcelCache<CharaCardHeader>.GetSheet().Where(row => row.UnlockCondition.RowId == excelRow.RowId).ToList().FirstOrNull()?.RowId ?? 0;
-        // multiple items are stored here, differentiate by Category Field
+        // multiple items are stored here, differentiate by Component Field
         var misc = ExcelCache<CharaCardDecoration>.GetSheet().Where(row => row.UnlockCondition.RowId == excelRow.RowId).ToList();
         foreach(var decal in misc)
         {
-            switch(decal.Category.RowId)
+            // TODO: Uncomment once my dev environment can actually build with the proper label for the new EXDSheets
+            // switch(decal.Component)
+            switch(decal.Unknown2)
             {
                 case 1:
                     PlateBacking = decal.RowId;
@@ -122,6 +123,14 @@ public class FramerKitCollectible : Collectible<BannerCondition>, ICreateable<Fr
             var unlockId = unlock.UnlockCriteria1.First().RowId + (ExcelRow.RowId - unlock.RowId);
             if (unlockId >= 0) isObtained = FFXIVClientStructs.FFXIV.Client.Game.UI.PlayerState.Instance()->IsFramersKitUnlocked(unlockId);
         }
+    }
+
+    protected override decimal GetPatchAdded()
+    {
+        decimal guess = base.GetPatchAdded();
+        // all framer kits that were added in 6.1 (not in patch data)
+        if((guess >= 999 || guess <= 2) && ExcelRow.RowId <= 347) return new decimal(6.1);
+        return guess;
     }
 
     protected override int GetIconId()

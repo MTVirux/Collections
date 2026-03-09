@@ -251,17 +251,17 @@ public class CollectionWidget
 
     private unsafe void DrawAdvancedFilters()
     {
-        // ImGui.SameLine();
-        // if (ImGui.Button("More Filters"))
-        //     ImGui.OpenPopup("##advancedFilters", ImGuiPopupFlags.NoOpenOverItems);
-        // if(ImGui.BeginPopupModal("##advancedFilters"))
-        // {
-        //     foreach(var filter in cachedFilters)
-        //     {
-        //         filter.Draw(service: EventService);
-        //     }
-        //     ImGui.EndPopup(); 
-        // }
+        ImGui.SameLine();
+        if (ImGui.Button("More Filters"))
+            ImGui.OpenPopup("##advancedFilters", ImGuiPopupFlags.NoOpenOverItems);
+        if(ImGui.BeginPopupModal("##advancedFilters"))
+        {
+            foreach(var filter in cachedFilters)
+            {
+                filter.Draw(service: EventService);
+            }
+            ImGui.EndPopup(); 
+        }
     }
 
     private int drawItemCount = 0;

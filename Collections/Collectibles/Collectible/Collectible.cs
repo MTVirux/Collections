@@ -198,8 +198,20 @@ public abstract class Collectible<T> : ICollectible where T : struct, IExcelRow<
 
     protected virtual decimal GetPatchAdded()
     {
-        // this way, unknown patch (new) items will appear at the top when sorted
-        decimal temp = (decimal)999.0;
+        // try manual override
+        var patchOverrides = DataOverrides.collectibleIdToPatchAdded;
+        foreach(var (type, dict) in patchOverrides)
+        {
+            if(typeof(T) == type)
+            {
+                foreach(var (id, patch) in dict)
+                if(Id == id)
+                {
+                    return patch;
+                }
+            }
+        }
+        // LuminaSupplemental source
         if(CollectibleKey != null)
         {
             // find patch added to the game
@@ -211,22 +223,8 @@ public abstract class Collectible<T> : ICollectible where T : struct, IExcelRow<
                 }
             }
         }
-        // try manual override
-        // TODO: lookup patch from quest ID
-        var patchOverrides = DataOverrides.collectibleIdToPatchAdded;
-        foreach(var (type, dict) in patchOverrides)
-        {
-            if(typeof(T) == type)
-            {
-                foreach(var (id, patch) in dict)
-                if(Id == id)
-                {
-                    temp = patch;
-                }
-            }
-        }
-        
-        return temp;
+        // this way, unknown patch (new) items will appear at the top when sorted
+        return new decimal(999.0);
     }
 
     public virtual string GetDisplayPatch()

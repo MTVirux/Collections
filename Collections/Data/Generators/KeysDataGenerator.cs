@@ -89,34 +89,33 @@ public class KeysDataGenerator
 
     private void PopulateQuestData()
     {
-    //     foreach (var quest in ExcelCache<Quest>.GetSheet())
-    //     {
-    //         var emote = quest.EmoteReward.Value;
-    //         if (emote.RowId != 0)
-    //         {
-    //             AddCollectibleKeyEntry(collectibleIdToQuest, typeof(Emote), emote.UnlockLink, quest);
-    //         }
-            
-    //     }
+        foreach (var quest in ExcelCache<Quest>.GetSheet())
+        {
+            var emote = quest.EmoteReward.Value;
+            if (emote.RowId != 0)
+            {
+                AddCollectibleKeyEntry(collectibleIdToQuest, typeof(Emote), emote.UnlockLink, quest);
+            }
+        }
 
-    //     foreach (var emote in ExcelCache<Emote>.GetSheet())
-    //     {
-    //         if (emote.UnlockLink > ExcelCache<Quest>.GetSheet().First().RowId && emote.UnlockLink < ExcelCache<Quest>.GetSheet().Last().RowId)
-    //         {
-    //             var quest = (Quest)ExcelCache<Quest>.GetSheet().GetRow(emote.UnlockLink)!;
-    //             AddCollectibleKeyEntry(collectibleIdToQuest, typeof(Emote), emote.UnlockLink, quest);
-    //         }
-    //     }
+        // Emote Unlock Data
+        foreach (var emote in ExcelCache<Emote>.GetSheet())
+        {
+            if (emote.UnlockLink > ExcelCache<Quest>.GetSheet().First().RowId && emote.UnlockLink < ExcelCache<Quest>.GetSheet().Last().RowId)
+            {
+                var quest = (Quest)ExcelCache<Quest>.GetSheet().GetRow(emote.UnlockLink)!;
+                AddCollectibleKeyEntry(collectibleIdToQuest, typeof(Emote), emote.UnlockLink, quest);
+            }
+        }
 
-
-        // foreach (var (type, dict) in DataOverrides.collectibleIdToUnlockQuestId)
-        // {
-        //     foreach (var (collectibleId, questId) in dict)
-        //     {
-        //         var quest = (Quest)ExcelCache<Quest>.GetSheet().GetRow(questId)!;
-        //         AddCollectibleKeyEntry(collectibleIdToQuest, type, collectibleId, quest);
-        //     }
-        // }
+        foreach (var (type, dict) in DataOverrides.collectibleIdToUnlockQuestId)
+        {
+            foreach (var (collectibleId, questId) in dict)
+            {
+                var quest = (Quest)ExcelCache<Quest>.GetSheet().GetRow(questId)!;
+                AddCollectibleKeyEntry(collectibleIdToQuest, type, collectibleId, quest);
+            }
+        }
     }
 
     private void PopulateInstanceData()
