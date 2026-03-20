@@ -1,4 +1,3 @@
-using FFXIVClientStructs.FFXIV.Client.System.Configuration;
 using LuminaSupplemental.Excel.Model;
 using LuminaSupplemental.Excel.Services;
 
@@ -45,23 +44,38 @@ public abstract class Collectible<T> : ICollectible where T : struct, IExcelRow<
             "Obtained",
             (c) => c.GetIsObtained(),
             Reverse: true
-        )
+        ),
+        new CollectibleSortOption(
+            "Marketboard Value",
+            (c) => c.CollectibleKey.GetIsTradeable() == Tradeability.Tradeable ? c.CollectibleKey.GetMarketBoardPriceLazy() ?? 0 : 0
+        ),
     ];
-    public static List<CollectibleFilterOption> FilterOptions = [
-        new CollectibleFilterOption(
+    protected List<CollectibleFilterOption> FilterOptions = [
+        new CollectibleListFilterOption<Tradeability>(
+            "Tradability",
+            (c) => c.Item1.CollectibleKey.GetIsTradeable() == c.Item2,
+            Enum.GetValues<Tradeability>().ToList(),
+            Description: "Whether this item can be bought off the marketboard"
+        ),
+        new CollectibleBooleanFilterOption(
             "Exclude Events",
             c => c.CollectibleKey.SourceCategories.Contains(SourceCategory.Event),
             Description: "Exclude items only obtainable from seasonal or limited events"
         ),
-        new CollectibleFilterOption(
+        new CollectibleBooleanFilterOption(
             "Exclude Mog Station",
             c => c.CollectibleKey.SourceCategories.Contains(SourceCategory.MogStation) && c.CollectibleKey.SourceCategories.Count == 1,
             Description: "Exclude items only ever obtainable via cash shop"
         ),
-        new CollectibleFilterOption(
+        new CollectibleBooleanFilterOption(
             "Exclude Unknown",
-            c => c.CollectibleKey.SourceCategories.Count == 0,
+            c => c.CollectibleKey.CollectibleSources.Count == 0,
             Description: "Exclude items that this plugin cannot find a source for"
+        ),
+        new CollectibleBooleanFilterOption(
+            "Exclude Ranked PvP",
+            c => c.CollectibleKey.CollectibleSources.Any(source => source.GetType() == typeof(PvPRankingSource)),
+            Description: "Exclude items only obtainable through ranked PvP"
         ),
     ];
 
@@ -74,14 +88,13 @@ public abstract class Collectible<T> : ICollectible where T : struct, IExcelRow<
         Description = GetDescription();
         if (CollectibleKey is null)
         {
-            Dev.Log($"Missing collectible key: {Name} ({Id})");
+            Dev.Log($"Missing collectible key: {Name} ({Id}) for row {ExcelRow.RowId} in collection {GetCollectionName()}");
         }
         PatchAdded = GetPatchAdded();
         PrimaryHint = GetPrimaryHint();
         SecondaryHint = GetSecondaryHint();
         IconHandler = new IconHandler(GetIconId());
     }
-
 
     public virtual void OpenGamerEscape()
     {
@@ -165,9 +178,9 @@ public abstract class Collectible<T> : ICollectible where T : struct, IExcelRow<
         Services.Configuration.Save();
     }
 
-    public ISharedImmediateTexture GetIconLazy()
+    public ISharedImmediateTexture GetIcon()
     {
-        return IconHandler.GetIconLazy();
+        return IconHandler.GetIcon();
     }
 
     public virtual string GetDisplayName()

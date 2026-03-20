@@ -42,7 +42,7 @@ public class GlassesCollectible: Collectible<Glasses>, ICreateable<GlassesCollec
 
     public override unsafe void UpdateObtainedState()
     {
-        isObtained = PlayerState.Instance()->IsGlassesUnlocked((ushort)ExcelRow.RowId);
+        isObtained = Services.UnlockState.IsGlassesUnlocked(ExcelRow);
     }
 
     protected override int GetIconId()

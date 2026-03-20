@@ -11,6 +11,20 @@ public class GlamourCollectible : Collectible<Item>, ICreateable<GlamourCollecti
         SortOptions.Add(new CollectibleSortOption("Dye Channels", (c) => c is GlamourCollectible ? ((GlamourCollectible)c).ExcelRow.DyeCount : -1, true));
         SortOptions.Add(new CollectibleSortOption("Level", (c) => c is GlamourCollectible ? ((GlamourCollectible)c).ExcelRow.LevelEquip : -1, true, (FontAwesomeIcon.SortNumericDownAlt, FontAwesomeIcon.SortNumericUpAlt)));
         SortOptions.Add(new CollectibleSortOption("Model", (c) => c is GlamourCollectible ? ((GlamourCollectible)c).ExcelRow.ModelMain : 0, false, null));
+        FilterOptions.Add(new CollectibleListFilterOption<int>(
+            "Gender",
+            (c) => {
+                if(c.Item1 is GlamourCollectible)
+                {
+                    bool exclude = (c.Item1 as GlamourCollectible).ExcelRow.EquipRestriction > 1 && (c.Item1 as GlamourCollectible).ExcelRow.EquipRestriction % 2 == (c.Item2 < 100 ? c.Item2 % 2 : c.Item2 - 102);
+                    if(c.Item2 > 100) exclude = !exclude;
+                    return exclude;
+                }
+                return false;
+            },
+            [2,3,102,103],
+            ["Show All Genders", "Hide Male-Exclusive", "Hide Female-Exclusive", "Show Only Male-Exclusive", "Show Only Female-Exclusive"]
+        ));
     }
 
     public static GlamourCollectible Create(Item excelRow)
@@ -56,7 +70,7 @@ public class GlamourCollectible : Collectible<Item>, ICreateable<GlamourCollecti
         List<Item> sharedModels = ExcelCache<Item>.GetSheet().Where(c => c.ModelMain == ExcelRow.ModelMain && c.GetEquipSlot() == ExcelRow.GetEquipSlot() && c.RowId != ExcelRow.RowId).ToList();
         if(sharedModels.Count > 0)
         {
-            ImGui.Text("Shares Model with: ");
+            ImGui.Text("Identical to: ");
             foreach(Item sharedModel in sharedModels)
             {
                 ImGui.Image(IconHandler.GetIcon(sharedModel.Icon).GetWrapOrEmpty().Handle, new Vector2(40, 40));

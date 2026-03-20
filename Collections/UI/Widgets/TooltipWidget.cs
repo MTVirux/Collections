@@ -13,7 +13,7 @@ public class TooltipWidget
 
     public unsafe void DrawItemTooltip(ICollectible collectible)
     {
-        var icon = collectible.GetIconLazy();
+        var icon = collectible.GetIcon();
         var collectibleKey = collectible.CollectibleKey;
         UiHelper.GroupWithMinWidth(() => { }, UiHelper.UnitWidth() * 52);
         // Icon
@@ -176,7 +176,7 @@ public class TooltipWidget
                     {
                         foreach (var costItem in shopSource.costItems)
                         {
-                            icon = costItem.collectibleKey.GetIconLazy();
+                            icon = costItem.collectibleKey.GetIcon();
                             if (icon != null)
                             {
                                 ImGui.Image(icon.GetWrapOrEmpty().Handle, new Vector2(icon.GetWrapOrEmpty().Width / 3, icon.GetWrapOrEmpty().Height / 3));
@@ -194,7 +194,7 @@ public class TooltipWidget
                     }
                     else
                     {
-                        icon = source.GetIconLazy();
+                        icon = source.GetIcon();
                         if (icon != null)
                         {
                             ImGui.Image(icon.GetWrapOrEmpty().Handle, sourceIconSize);

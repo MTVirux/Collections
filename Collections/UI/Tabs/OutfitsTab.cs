@@ -156,15 +156,16 @@ public class OutfitsTab : IDrawable
         .Where(c =>
             {
                 // show all items if all filters disabled
-                if (!jobFilters.Any() && !JobSelectorWidget.AllClasses())
+                if (!jobFilters.Any() && !JobSelectorWidget.AllClasses() && !JobSelectorWidget.JobSpecific())
                     return true;
                 var itemJobCat = ((OutfitKey)c.CollectibleKey).FirstItem.ClassJobCategory.Value;
                 // only show "All Classes" items if toggled
                 if (itemJobCat.RowId < 2) return JobSelectorWidget.AllClasses();
                 var itemJobs = itemJobCat.GetJobs();
+                
                 foreach (var jobFilter in jobFilters)
                 {
-                    if (itemJobs.Contains(jobFilter))
+                    if (itemJobs.Contains(jobFilter) && !(JobSelectorWidget.JobSpecific() && itemJobs.Count <= 1))
                     {
                         return true;
                     }

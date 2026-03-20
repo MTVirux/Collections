@@ -58,7 +58,7 @@ public class EquipSlotsWidget
             if (glamourItem is not null)
             {
                 collectible = glamourItem.GetCollectible();
-                icon = collectible.GetIconLazy();
+                icon = collectible.GetIcon();
             }
 
             // Draw icon

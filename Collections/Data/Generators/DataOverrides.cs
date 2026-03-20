@@ -42,11 +42,9 @@ public class DataOverrides
         }},
     };
 
-    public static readonly Dictionary<Type, Dictionary<uint, (uint, int)>> collectibleIdToSeriesReward = new()
+    public static readonly Dictionary<Type, Dictionary<uint, (uint, int)>> collectibleIdToFeastReward = new()
     {
-        {typeof(Glasses), new Dictionary<uint, (uint, int)>() {
-            {13, (1, 15)} // Shaded Spectacles
-        }},
+        // yeesh, these are a PAIN.
     };
 
     public static readonly Dictionary<Type, Dictionary<uint, uint>> collectibleIdToUnlockInstanceId = new()

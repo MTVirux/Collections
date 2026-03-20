@@ -42,7 +42,7 @@ public class OutfitsCollectible : Collectible<Item>, ICreateable<OutfitsCollecti
         for(int i = 0; i < collectibles?.Count; i++)
         {
             var c = collectibles[i];
-            var icon = c.GetIconLazy();
+            var icon = c.GetIcon();
             if (icon != null)
             {
                 var origPos = ImGui.GetCursorPos();

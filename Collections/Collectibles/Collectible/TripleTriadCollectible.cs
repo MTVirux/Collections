@@ -49,12 +49,13 @@ public class TripleTriadCollectible : Collectible<TripleTriadCard>, ICreateable<
     public override void DrawAdditionalTooltip()
     {
         TripleTriadCardResident? temp = ExcelCache<TripleTriadCardResident>.GetSheet().GetRow(ExcelRow.RowId);
+        if(temp == null) return;
         var cursor = ImGui.GetCursorPos();
         // triple triad card icon start
         // draw card
-        var size = GetIconLazy().GetWrapOrEmpty().Size;
+        var size = GetIcon().GetWrapOrEmpty().Size;
         var iconSize = new Vector2(40, 40);
-        ImGui.Image(GetIconLazy().GetWrapOrEmpty().Handle, size);
+        ImGui.Image(GetIcon().GetWrapOrEmpty().Handle, size);
         // add values
         ImGui.SetCursorPos(cursor + ((size - iconSize) * new Vector2(0.5f, 0.75f)));
         ImGui.Image(GetGameIcon(temp.Value.Top + CardNumIconId).GetWrapOrEmpty().Handle, iconSize);
@@ -79,9 +80,9 @@ public class TripleTriadCollectible : Collectible<TripleTriadCard>, ICreateable<
         return Services.TextureProvider.GetFromGameIcon(lookup);
     }
 
-    public override unsafe void UpdateObtainedState()
+    public override void UpdateObtainedState()
     {
-        isObtained = UIState.Instance()->IsTripleTriadCardUnlocked((ushort)ExcelRow.RowId);
+        isObtained = Services.UnlockState.IsTripleTriadCardUnlocked(ExcelRow);
     }
 
     protected override int GetIconId()
@@ -89,7 +90,7 @@ public class TripleTriadCollectible : Collectible<TripleTriadCard>, ICreateable<
         return (int)ExcelRow.RowId + 87000;
     }
 
-    public override unsafe void Interact()
+    public override void Interact()
     {
     }
 

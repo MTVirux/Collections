@@ -4,11 +4,9 @@ namespace Collections;
 
 public class ItemKey : CollectibleKey<(Item, int)>, ICreateable<ItemKey, (Item, int)>
 {
-    private IconHandler iconHandler { get; init; }
 
     public ItemKey((Item, int) input) : base(input)
     {
-        iconHandler = new IconHandler(input.Item1.Icon);
     }
 
     public static ItemKey Create((Item, int) input)
@@ -135,9 +133,9 @@ public class ItemKey : CollectibleKey<(Item, int)>, ICreateable<ItemKey, (Item, 
         return sourceCategories;
     }
 
-    public ISharedImmediateTexture GetIconLazy()
+    public ISharedImmediateTexture GetIcon()
     {
-        return iconHandler.GetIconLazy();
+        return IconHandler.GetIcon(Input.Item1.Icon);
     }
 
     public override Tradeability GetIsTradeable()
@@ -158,11 +156,8 @@ public class ItemKey : CollectibleKey<(Item, int)>, ICreateable<ItemKey, (Item, 
         if (!marketBoardPriceScheduled)
         {
             marketBoardPriceScheduled = true;
-            var world = Services.ClientState.LocalPlayer?.CurrentWorld.Value;
-            if (world != null)
-            {
-                homeWorld = (World)world;
-            }
+            var world = Services.PlayerState.CurrentWorld.Value;
+            homeWorld = world;
             Task.Run(async () =>
             {
                 await Services.UniversalisClient.populateMarketBoardData(Input.Item1.RowId, homeWorld);

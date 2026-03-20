@@ -10,19 +10,13 @@ public abstract class CollectibleSource : ICollectibleSource
 
     protected abstract int GetIconId();
 
-    protected IconHandler IconHandler { get; set; }
-
     public CollectibleSource()
     {
     }
 
-    public ISharedImmediateTexture GetIconLazy()
+    public ISharedImmediateTexture GetIcon()
     {
-        if (IconHandler == null)
-        {
-            IconHandler = new IconHandler(GetIconId());
-        }
-        return IconHandler.GetIconLazy();
+        return IconHandler.GetIcon(GetIconId(), false);
     }
 
     public abstract CollectibleSource Clone();

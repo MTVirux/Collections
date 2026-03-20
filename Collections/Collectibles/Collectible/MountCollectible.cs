@@ -43,9 +43,9 @@ public class MountCollectible : Collectible<Mount>, ICreateable<MountCollectible
         return new HintModule((ExcelRow.ExtraSeats + 1).ToString(), FontAwesomeIcon.PeopleGroup);
     }
 
-    public override unsafe void UpdateObtainedState()
+    public override void UpdateObtainedState()
     {
-        isObtained = PlayerState.Instance()->IsMountUnlocked(ExcelRow.RowId);
+        isObtained = Services.UnlockState.IsMountUnlocked(ExcelRow);
     }
 
     protected override int GetIconId()

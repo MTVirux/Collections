@@ -1,45 +1,39 @@
 using Collections;
 
-public class CollectibleFilterOption
+public abstract class CollectibleFilterOption
 {
     /// <summary>
     /// Represents an option for filtering collectibles
     /// </summary>
     /// <param name="Name"> name of the filter option </param>
-    /// <param name="Filter"> function to determine whether the collectible should be filtered.
+    /// <param name="Filter"> function to determine the field that should be used for comparison
     /// this should return true if the collectible should be filtered. </param>
     /// <param name="Description"> optional description of the filter option. </param>
-    /// <param name="Enabled"> whether this filter option should be applied. </param>
+    /// <param name="Selection"> Default option for the first comparison</param>
     public CollectibleFilterOption(string Name, Func<ICollectible, bool> Filter, string Description = "", bool Enabled = false)
     {
         this.Name = Name;
-        this.Enabled = Enabled;
         this.Description = Description;
         this.Filter = Filter;
+        this.Enabled = Enabled;
     }
     public string Name { get; set; }
-    public bool Enabled { get; set; }
     public string Description { get; set; }
     public Func<ICollectible, bool> Filter { get; set; }
 
-    public bool IsFiltered(ICollectible collectible)
+    public bool Enabled { get; set; }
+    public virtual bool IsFiltered(ICollectible collectible)
     {
         return Enabled && Filter(collectible);
     }
 
-    public IEnumerable<ICollectible> FilterCollection(IEnumerable<ICollectible> collection)
+    public virtual IEnumerable<ICollectible> FilterCollection(IEnumerable<ICollectible> collection)
     {
         return collection.AsParallel().Where(c => !Filter(c));
     }
 
     // Try to assume everything is on the same line
-    public unsafe void Draw(EventService service)
+    public virtual unsafe void Draw(EventService service)
     {
-        bool ready = Enabled;
-        if (ImGui.Checkbox(Name, ref ready))
-        {
-            Enabled = ready;
-            service.Publish<FilterChangeEvent, FilterChangeEventArgs>(new FilterChangeEventArgs());
-        }
     }
 }

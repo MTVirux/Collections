@@ -71,7 +71,7 @@ public class CollectionWidget
                 for (int i = 0; i < collectionList.Count; i++)
                 {
                     var collectible = collectionList[i];
-                    var icon = collectible.GetIconLazy();
+                    var icon = collectible.GetIcon();
 
                     if (icon is null)
                     {
@@ -112,7 +112,7 @@ public class CollectionWidget
                             if (i >= collectionList.Count) break;
 
                             var collectible = collectionList[i];
-                            var icon = collectible.GetIconLazy();
+                            var icon = collectible.GetIcon();
 
                             if (icon is null)
                             {
@@ -253,8 +253,8 @@ public class CollectionWidget
     {
         ImGui.SameLine();
         if (ImGui.Button("More Filters"))
-            ImGui.OpenPopup("##advancedFilters", ImGuiPopupFlags.NoOpenOverItems);
-        if(ImGui.BeginPopupModal("##advancedFilters"))
+            ImGui.OpenPopup("##advancedFilters", ImGuiPopupFlags.None);
+        if(ImGui.BeginPopup("##advancedFilters"))
         {
             foreach(var filter in cachedFilters)
             {
@@ -273,7 +273,7 @@ public class CollectionWidget
         bool debounce = false;
 
         // to properly draw everything
-        var icon = collectible.GetIconLazy();
+        var icon = collectible.GetIcon();
 
         var tint = collectible.GetIsObtained() ? defaultTint : ColorsPalette.GREY2;
         if (ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new Vector2(iconSize, iconSize), default, new Vector2(1f, 1f), -1, default, tint))

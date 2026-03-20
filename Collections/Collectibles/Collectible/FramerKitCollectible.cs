@@ -98,6 +98,9 @@ public class FramerKitCollectible : Collectible<BannerCondition>, ICreateable<Fr
 
     public override unsafe void UpdateObtainedState()
     {
+        // uncomment if this actually works
+        // isObtained = Services.UnlockState.IsBannerConditionUnlocked(ExcelRow);
+        
         if (ExcelRow.UnlockType1 == 9)
         {
             isObtained = FFXIVClientStructs.FFXIV.Client.Game.UI.PlayerState.Instance()->IsFramersKitUnlocked(ExcelRow.UnlockCriteria1.First().RowId);
@@ -105,14 +108,14 @@ public class FramerKitCollectible : Collectible<BannerCondition>, ICreateable<Fr
         // items unlocked from quest
         else if (ExcelRow.UnlockType1 == 1)
         {
-            isObtained = QuestExecutor.IsQuestComplete(ExcelRow.UnlockCriteria1.First().RowId);
+            isObtained = Services.UnlockState.IsQuestCompleted(ExcelCache<Quest>.GetSheet().GetRow(ExcelRow.UnlockCriteria1.First().RowId).GetValueOrDefault());
         }
         // unlocked from completing ultimate
         else if (ExcelRow.UnlockType1 == 4)
         {
             Achievement? a = ExcelCache<Achievement>.GetSheet().Where(a => a.Key.RowId == ExcelRow.Prerequisite.RowId).FirstOrNull();
             if (a != null)
-                isObtained = AchievementOpener.IsComplete((int)a.Value.RowId);
+                isObtained = Services.UnlockState.IsAchievementComplete(a.Value);
         }
         // PvP
         else if (ExcelRow.UnlockType1 == 11)

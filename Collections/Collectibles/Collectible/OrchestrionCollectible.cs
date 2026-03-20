@@ -36,9 +36,9 @@ public class OrchestrionCollectible : Collectible<Orchestrion>, ICreateable<Orch
         return ExcelRow.Description.ToString();
     }
 
-    public override unsafe void UpdateObtainedState()
+    public override void UpdateObtainedState()
     {
-        isObtained = PlayerState.Instance()->IsOrchestrionRollUnlocked(ExcelRow.RowId);
+        isObtained = Services.UnlockState.IsOrchestrionUnlocked(ExcelRow);
     }
 
     protected override int GetIconId()

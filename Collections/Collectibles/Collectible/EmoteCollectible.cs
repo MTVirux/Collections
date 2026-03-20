@@ -1,3 +1,4 @@
+using Dalamud.Interface.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
@@ -39,9 +40,9 @@ public class EmoteCollectible : Collectible<Emote>, ICreateable<EmoteCollectible
         return "";
     }
 
-    public override unsafe void UpdateObtainedState()
+    public override void UpdateObtainedState()
     {
-        isObtained = UIState.Instance()->IsEmoteUnlocked((ushort)ExcelRow.RowId);
+        isObtained = Services.UnlockState.IsEmoteUnlocked(ExcelRow);
     }
 
     protected override decimal GetPatchAdded()
@@ -68,4 +69,11 @@ public class EmoteCollectible : Collectible<Emote>, ICreateable<EmoteCollectible
         if(isObtained)
             EmoteManager.Instance()->ExecuteEmote((ushort)ExcelRow.RowId);
     }
+    public override void DrawAdditionalTooltip()
+    {
+        if(ExcelRow.TextCommand.ValueNullable.HasValue)
+        {
+            ImGui.Text(ExcelRow.TextCommand.Value.Description.ToString());
+        }
+    }    
 }

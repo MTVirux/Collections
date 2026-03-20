@@ -1,3 +1,5 @@
+using Dalamud.Utility;
+
 namespace Collections;
 
 public class JobSelectorWidget
@@ -10,6 +12,8 @@ public class JobSelectorWidget
 
     // Specific filter for "All Classes" items
     private bool allClasses = true;
+    // Specific filter for "Job-Specific" items
+    private bool jobSpecific = true;
 
     private EventService EventService { get; init; }
     public JobSelectorWidget(EventService eventService)
@@ -80,6 +84,12 @@ public class JobSelectorWidget
                         Filters[job] = !Filters[job];
                         PublishFilterChangeEvent();
                     }
+                    if(ImGui.IsItemHovered())
+                    {
+                        ImGui.BeginTooltip();
+                        ImGui.Text(job.Name.ToString().FirstCharToUpper());
+                        ImGui.EndTooltip();
+                    }
                 }
                 ImGui.SameLine();
             }
@@ -100,6 +110,33 @@ public class JobSelectorWidget
             allClasses = !allClasses;
             PublishFilterChangeEvent();
         }
+        if(ImGui.IsItemHovered())
+        {
+            ImGui.BeginTooltip();
+            ImGui.Text("All Classes");
+            ImGui.EndTooltip();
+        }
+        // Job-specific gear (Artifact basically)
+        ImGui.SameLine();
+        UiHelper.ImageToggleButton(IconHandler.GetIcon(62521), new Vector2(iconSize, iconSize) * (ImGui.GetFontSize() / 14), jobSpecific);
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
+        {
+            var newState = IsAllActive() ? true : !jobSpecific;
+            SetAllState(false, false);
+            jobSpecific = newState;
+            PublishFilterChangeEvent();
+        }
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
+        {
+            jobSpecific = !jobSpecific;
+            PublishFilterChangeEvent();
+        }
+        if(ImGui.IsItemHovered())
+        {
+            ImGui.BeginTooltip();
+            ImGui.Text("Artifact Gear");
+            ImGui.EndTooltip();
+        }
         ImGui.PopStyleVar();
     }
 
@@ -107,13 +144,14 @@ public class JobSelectorWidget
     {
         Filters = Filters.ToDictionary(e => e.Key, e => state);
         allClasses = state;
+        jobSpecific = state;
         if (publishEvent)
             PublishFilterChangeEvent();
     }
 
     private void SetCurrentJob()
     {
-        var matchingClassJob = Filters.Where(e => e.Key.RowId == Services.ClientState.LocalPlayer.ClassJob.RowId);
+        var matchingClassJob = Filters.Where(e => e.Key.RowId == Services.PlayerState.ClassJob.RowId);
         if (matchingClassJob.Any())
         {
             SetAllState(false, false);
@@ -124,12 +162,17 @@ public class JobSelectorWidget
 
     private bool IsAllActive()
     {
-        return !Filters.Where(e => e.Value == false).Any() && allClasses;
+        return !Filters.Any(e => e.Value == false) && allClasses && jobSpecific;
     }
 
     public bool AllClasses()
     {
         return allClasses;
+    }
+
+    public bool JobSpecific()
+    {
+        return jobSpecific;
     }
 
     private void PublishFilterChangeEvent()
