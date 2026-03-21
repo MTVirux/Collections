@@ -37,7 +37,7 @@ public class EmoteCollectible : Collectible<Emote>, ICreateable<EmoteCollectible
 
     protected override string GetDescription()
     {
-        return "";
+        return ExcelRow.TextCommand.Value.Description.ToString();
     }
 
     public override void UpdateObtainedState()
@@ -69,11 +69,4 @@ public class EmoteCollectible : Collectible<Emote>, ICreateable<EmoteCollectible
         if(isObtained)
             EmoteManager.Instance()->ExecuteEmote((ushort)ExcelRow.RowId);
     }
-    public override void DrawAdditionalTooltip()
-    {
-        if(ExcelRow.TextCommand.ValueNullable.HasValue)
-        {
-            ImGui.Text(ExcelRow.TextCommand.Value.Description.ToString());
-        }
-    }    
 }

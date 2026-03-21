@@ -64,7 +64,7 @@ public class GlamourCollectible : Collectible<Item>, ICreateable<GlamourCollecti
                     || Services.ItemFinder.IsItemInDresser(ExcelRow.RowId, true);
     }
 
-    public override unsafe void DrawAdditionalTooltip()
+    public override void DrawAdditionalTooltip()
     {
         base.DrawAdditionalTooltip();
         List<Item> sharedModels = ExcelCache<Item>.GetSheet().Where(c => c.ModelMain == ExcelRow.ModelMain && c.GetEquipSlot() == ExcelRow.GetEquipSlot() && c.RowId != ExcelRow.RowId).ToList();

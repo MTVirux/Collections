@@ -66,9 +66,23 @@ public class MountCollectible : Collectible<Mount>, ICreateable<MountCollectible
 
     public override void DrawAdditionalTooltip()
     {
-        // ImGui.Text(ExcelCache<MountTransient>.GetSheet().GetRow(ExcelRow.RowId).Value.DescriptionEnhanced.ToString());
         var pic = Services.TextureProvider.GetFromGameIcon(new GameIconLookup((uint)GetImageId()));
-        ImGui.Image(pic.GetWrapOrEmpty().Handle, pic.GetWrapOrEmpty().Size * 0.75f);
+        ImGui.Image(pic.GetWrapOrEmpty().Handle, pic.GetWrapOrEmpty().Size * 0.85f);
+        ImGui.SameLine();
+        ImGui.BeginGroup();
+        if (ImGui.BeginTable($"##mount-{ExcelRow.RowId}-additional-tooltip", 1))
+        {
+            ImGui.TableNextColumn();
+            // Acts as a spacer
+            ImGui.Text("");
+            ImGui.PushTextWrapPos(UiHelper.UnitWidth() * 72);//UiHelper.GetLengthToRightOfWindow());
+            ImGui.TextColored(ColorsPalette.GREY2, $"{ExcelCache<MountTransient>.GetSheet().GetRow(ExcelRow.RowId).GetValueOrDefault().DescriptionEnhanced}");
+            ImGui.Text("");
+            ImGui.Text($"{ExcelCache<MountTransient>.GetSheet().GetRow(ExcelRow.RowId).GetValueOrDefault().Tooltip}");
+            ImGui.PopTextWrapPos();
+            ImGui.EndTable();
+        }
+        ImGui.EndGroup();       
     }
 
     public override void OpenGamerEscape()

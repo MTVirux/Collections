@@ -217,9 +217,9 @@ public class GlamourTab : IDrawable
                 var itemJobs = itemJobCat.GetJobs();
                 if(JobSelectorWidget.JobSpecific()) {
                     // Shows all job-specific gear if there aren't any specific jobs being looked for
-                    if(!jobFilters.Any() && itemJobs.Count <= 1)
+                    if(!jobFilters.Any() && itemJobs.Count <= 2)
                         return true;
-                    else if(itemJobs.Count > 1)
+                    else if(itemJobs.Count > 2)
                         return false;
                 }
                 foreach (var jobFilter in jobFilters)

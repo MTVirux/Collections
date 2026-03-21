@@ -1,5 +1,4 @@
 using FFXIVClientStructs.FFXIV.Client.Game;
-using FFXIVClientStructs.FFXIV.Client.Game.UI;
 
 namespace Collections;
 
@@ -46,6 +45,11 @@ public class MinionCollectible : Collectible<Companion>, ICreateable<MinionColle
         return ExcelRow.Icon;
     }
 
+    private int GetImageId()
+    {
+        return 64000 + ExcelRow.Icon; 
+    }
+
     public override unsafe void Interact()
     {
         if (isObtained)
@@ -60,5 +64,29 @@ public class MinionCollectible : Collectible<Companion>, ICreateable<MinionColle
         return Name
                 .UpperCaseAfterSpaces()
                 .LowerCaseWords(new List<string>() { "Of", "Up" });
+    }
+
+    public override void DrawAdditionalTooltip()
+    {
+        var pic = Services.TextureProvider.GetFromGameIcon(new GameIconLookup((uint)GetImageId()));
+        ImGui.Image(pic.GetWrapOrEmpty().Handle, pic.GetWrapOrEmpty().Size * 0.75f);
+        ImGui.SameLine();
+        ImGui.BeginGroup();
+        if (ImGui.BeginTable($"##minion-{ExcelRow.RowId}-additional-tooltip", 1))
+        {
+            ImGui.TableSetupColumn("");
+            ImGui.TableNextColumn();
+            // Acts as a spacer
+            ImGui.Text("");
+            ImGui.Text($"{ExcelRow.Behavior.Value.Name.ToString()}, {ExcelRow.MinionRace.Value.Name.ToString()}");
+            ImGui.Text("");
+            ImGui.PushTextWrapPos(UiHelper.UnitWidth() * 72);
+            ImGui.TextColored(ColorsPalette.GREY2, $"{ExcelCache<CompanionTransient>.GetSheet().GetRow(ExcelRow.RowId).GetValueOrDefault().DescriptionEnhanced}");
+            ImGui.Text("");
+            ImGui.Text($"{ExcelCache<CompanionTransient>.GetSheet().GetRow(ExcelRow.RowId).GetValueOrDefault().Tooltip}");
+            ImGui.PopTextWrapPos();
+            ImGui.EndTable();
+        }
+        ImGui.EndGroup();       
     }
 }

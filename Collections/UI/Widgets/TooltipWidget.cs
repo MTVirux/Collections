@@ -124,7 +124,7 @@ public class TooltipWidget
         }
 
         // Additional Tooltip widget data
-        if(Services.Configuration.ShowAdditionalTooltips)
+        if(Services.Configuration.AdditionalTooltips.Contains(collectible.GetCollectionName()))
         {
             collectible.DrawAdditionalTooltip();
         }

@@ -162,10 +162,16 @@ public class OutfitsTab : IDrawable
                 // only show "All Classes" items if toggled
                 if (itemJobCat.RowId < 2) return JobSelectorWidget.AllClasses();
                 var itemJobs = itemJobCat.GetJobs();
-                
+                if(JobSelectorWidget.JobSpecific()) {
+                    // Shows all job-specific gear if there aren't any specific jobs being looked for
+                    if(!jobFilters.Any() && itemJobs.Count <= 2)
+                        return true;
+                    else if(itemJobs.Count > 2)
+                        return false;
+                }
                 foreach (var jobFilter in jobFilters)
                 {
-                    if (itemJobs.Contains(jobFilter) && !(JobSelectorWidget.JobSpecific() && itemJobs.Count <= 1))
+                    if (itemJobs.Contains(jobFilter))
                     {
                         return true;
                     }

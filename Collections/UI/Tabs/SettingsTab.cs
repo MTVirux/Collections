@@ -5,7 +5,7 @@ public class SettingsTab : IDrawable
     private List<string> collectionNames = new();
     public SettingsTab()
     {
-        showAdditionalTooltips = Services.Configuration.ShowAdditionalTooltips;
+        showAdditionalTooltips = Services.Configuration.AdditionalTooltips;
         autoOpenInstanceTab = Services.Configuration.AutoOpenInstanceTab;
         onlyOpenIfUncollected = Services.Configuration.OnlyOpenIfUncollected;
         autoHideObtainedFromInstanceTab = Services.Configuration.AutoHideObtainedFromInstanceTab;
@@ -17,7 +17,7 @@ public class SettingsTab : IDrawable
     private bool separatePreviewAndApply;
     private bool onlyOpenIfUncollected;
     private bool autoHideObtainedFromInstanceTab;
-    private bool showAdditionalTooltips;
+    private List<string> showAdditionalTooltips;
     private List<string> excludedCollectionsFromInstanceTab;
     public void Draw()
     {
@@ -26,11 +26,7 @@ public class SettingsTab : IDrawable
             Services.Configuration.SeparatePreviewAndApply = separatePreviewAndApply;
             Services.Configuration.Save();
         }
-        if(ImGui.Checkbox("Show additional item information in tooltips", ref showAdditionalTooltips))
-        {
-            Services.Configuration.ShowAdditionalTooltips = showAdditionalTooltips;
-            Services.Configuration.Save();
-        }
+        
         if (ImGui.Checkbox("Auto open Instance tab when entering an instance", ref autoOpenInstanceTab))
         {
             Services.Configuration.AutoOpenInstanceTab = autoOpenInstanceTab;
@@ -49,6 +45,21 @@ public class SettingsTab : IDrawable
             Services.Configuration.AutoHideObtainedFromInstanceTab = autoHideObtainedFromInstanceTab;
             Services.Configuration.Save();
         }
+        ImGui.Text("Show additional item information for these collections");
+        ImGui.BeginListBox("##collection-box-add-tooltips", new Vector2(300, 200));
+        foreach (var collection in collectionNames)
+        {
+            bool isShown = showAdditionalTooltips.Contains(collection);
+            if (ImGui.Checkbox($"{collection}", ref isShown))
+            {
+                if (isShown)
+                    showAdditionalTooltips.Add(collection);
+                else
+                    showAdditionalTooltips.Remove(collection);
+                Services.Configuration.Save();
+            }
+        }
+        ImGui.EndListBox();
 
         ImGui.Text("Exclude these collections from the Instance tab");
         ImGui.BeginListBox("##collection-box", new Vector2(300, 200));
@@ -61,6 +72,7 @@ public class SettingsTab : IDrawable
                     excludedCollectionsFromInstanceTab.Add(collection);
                 else
                     excludedCollectionsFromInstanceTab.Remove(collection);
+                Services.Configuration.Save();
             }
         }
         ImGui.EndListBox();
@@ -74,6 +86,7 @@ public class SettingsTab : IDrawable
 
     public void OnClose()
     {
+        
     }
 
     public void Dispose()

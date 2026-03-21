@@ -10,7 +10,7 @@ public class Configuration : IPluginConfiguration
     public HashSet<uint> WishListed = new();
     public List<uint> DresserItemIds = new();
     public List<uint> ArmoireItemIds = new();
-    public bool ShowAdditionalTooltips = false;
+    public List<string> AdditionalTooltips = new();
     public GlamourTree GlamourTree = new();
     public bool AutoOpenInstanceTab = true;
     public bool OnlyOpenIfUncollected = false;
