@@ -72,7 +72,7 @@ public class OutfitKey : ItemKey, ICreateable<OutfitKey, (Item, int)>
 
     public override Tradeability GetIsTradeable()
     {
-        return !Input.Item1.IsUntradable ? Tradeability.Tradeable : Tradeability.UntradeableSingle;
+        return !Input.Item1.IsUntradable ? Tradeability.Tradeable : Tradeability.Untradeable;
     }
 }
 

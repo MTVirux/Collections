@@ -156,7 +156,7 @@ public class OutfitsTab : IDrawable
         .Where(c =>
             {
                 // show all items if all filters disabled
-                if (!jobFilters.Any() && !JobSelectorWidget.AllClasses() && !JobSelectorWidget.JobSpecific())
+                if (JobSelectorWidget.IsAllActive() || JobSelectorWidget.IsAllInactive())
                     return true;
                 var itemJobCat = ((OutfitKey)c.CollectibleKey).FirstItem.ClassJobCategory.Value;
                 // only show "All Classes" items if toggled

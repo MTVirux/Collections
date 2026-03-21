@@ -39,16 +39,12 @@ public class GlamourSet
     {
         if (!Services.DataProvider.SupportedEquipSlots.Contains(equipSlot))
             throw new ArgumentOutOfRangeException($"Equip slot {equipSlot} not supported for GlamourSet");
-
         Items[equipSlot] = glamouritem;
     }
 
     public void SetItem(Item item, uint stain0Id, uint stain1Id, EquipSlot? equipSlot = null)
     {
-        if (!Services.DataProvider.SupportedEquipSlots.Contains(item.GetEquipSlot()))
-            throw new ArgumentOutOfRangeException($"Equip slot {item.GetEquipSlot()} not supported for GlamourSet");
-
-        Items[equipSlot ?? item.GetEquipSlot()] = new GlamourItem(item.RowId, stain0Id, stain1Id);
+        SetItem(equipSlot ?? item.GetEquipSlot(), new GlamourItem(item.RowId, stain0Id, stain1Id));
     }
 
     public void ClearEquipSlot(EquipSlot equipSlot)
@@ -84,7 +80,6 @@ public class GlamourItem
     {
         return (Stain)ExcelCache<Stain>.GetSheet().GetRow(Stain1Id)!;
     }
-
 
     public EquipSlot GetEquipSlot()
     {

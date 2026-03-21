@@ -45,15 +45,15 @@ public abstract class Collectible<T> : ICollectible where T : struct, IExcelRow<
             (c) => c.GetIsObtained(),
             Reverse: true
         ),
-        new CollectibleSortOption(
-            "Marketboard Value",
-            (c) => c.CollectibleKey.GetIsTradeable() == Tradeability.Tradeable ? c.CollectibleKey.GetMarketBoardPriceLazy() ?? 0 : 0
-        ),
+        // new CollectibleSortOption(
+        //     "Marketboard Value",
+        //     (c) => c.CollectibleKey.GetIsTradeable() == Tradeability.Tradeable ? c.CollectibleKey.GetMarketBoardPriceLazy() ?? 0 : 0
+        // ),
     ];
     protected List<CollectibleFilterOption> FilterOptions = [
         new CollectibleListFilterOption<Tradeability>(
             "Tradability",
-            (c) => c.Item1.CollectibleKey.GetIsTradeable() == c.Item2,
+            (c) => c.Item1.CollectibleKey.GetIsTradeable() != c.Item2,
             Enum.GetValues<Tradeability>().ToList(),
             Description: "Whether this item can be bought off the marketboard"
         ),
@@ -72,11 +72,11 @@ public abstract class Collectible<T> : ICollectible where T : struct, IExcelRow<
             c => c.CollectibleKey.CollectibleSources.Count == 0,
             Description: "Exclude items that this plugin cannot find a source for"
         ),
-        new CollectibleBooleanFilterOption(
-            "Exclude Ranked PvP",
-            c => c.CollectibleKey.CollectibleSources.Any(source => source.GetType() == typeof(PvPRankingSource)),
-            Description: "Exclude items only obtainable through ranked PvP"
-        ),
+        // new CollectibleBooleanFilterOption(
+        //     "Exclude Ranked PvP",
+        //     c => c.CollectibleKey.CollectibleSources.Any(source => source.GetType() == typeof(PvPRankingSource)),
+        //     Description: "Exclude items only obtainable through ranked PvP"
+        // ),
     ];
 
     public Collectible(T excelRow)

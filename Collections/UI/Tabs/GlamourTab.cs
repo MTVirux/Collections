@@ -208,8 +208,8 @@ public class GlamourTab : IDrawable
         // (3) job filters
         .Where(c =>
             {
-                // show all items if all filters disabled
-                if (!jobFilters.Any() && !JobSelectorWidget.AllClasses() && !JobSelectorWidget.JobSpecific())
+                // show all items if all filters enabled or disabled
+                if (JobSelectorWidget.IsAllActive() || JobSelectorWidget.IsAllInactive())
                     return true;
                 var itemJobCat = ((GlamourCollectible)c).ExcelRow.ClassJobCategory.Value;
                 // only show "All Classes" items if toggled

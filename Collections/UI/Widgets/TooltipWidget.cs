@@ -288,7 +288,7 @@ public class TooltipWidget
                 ImGui.SetTooltip("Marketboard price");
             }
         }
-        else if (tradeability == Tradeability.UntradeableSingle)
+        else if (tradeability == Tradeability.Untradeable)
         {
             var buttonBaseColor = *ImGui.GetStyleColorVec4(ImGuiCol.Button);
             ImGui.PushStyleColor(ImGuiCol.Text, ColorsPalette.GREY2);

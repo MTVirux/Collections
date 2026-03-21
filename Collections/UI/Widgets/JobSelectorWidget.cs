@@ -160,9 +160,14 @@ public class JobSelectorWidget
         }
     }
 
-    private bool IsAllActive()
+    public bool IsAllActive()
     {
         return !Filters.Any(e => e.Value == false) && allClasses && jobSpecific;
+    }
+
+    public bool IsAllInactive()
+    {
+        return !Filters.Any(e => e.Value == true) && !allClasses && !jobSpecific;
     }
 
     public bool AllClasses()

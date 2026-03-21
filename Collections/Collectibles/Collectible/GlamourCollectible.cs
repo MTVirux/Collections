@@ -11,18 +11,23 @@ public class GlamourCollectible : Collectible<Item>, ICreateable<GlamourCollecti
         SortOptions.Add(new CollectibleSortOption("Dye Channels", (c) => c is GlamourCollectible ? ((GlamourCollectible)c).ExcelRow.DyeCount : -1, true));
         SortOptions.Add(new CollectibleSortOption("Level", (c) => c is GlamourCollectible ? ((GlamourCollectible)c).ExcelRow.LevelEquip : -1, true, (FontAwesomeIcon.SortNumericDownAlt, FontAwesomeIcon.SortNumericUpAlt)));
         SortOptions.Add(new CollectibleSortOption("Model", (c) => c is GlamourCollectible ? ((GlamourCollectible)c).ExcelRow.ModelMain : 0, false, null));
-        FilterOptions.Add(new CollectibleListFilterOption<int>(
+        FilterOptions.Insert(1, new CollectibleListFilterOption<int>(
             "Gender",
             (c) => {
                 if(c.Item1 is GlamourCollectible)
                 {
-                    bool exclude = (c.Item1 as GlamourCollectible).ExcelRow.EquipRestriction > 1 && (c.Item1 as GlamourCollectible).ExcelRow.EquipRestriction % 2 == (c.Item2 < 100 ? c.Item2 % 2 : c.Item2 - 102);
+                    bool exclude = (c.Item1 as GlamourCollectible).ExcelRow.EquipRestriction > 1 && 
+                    // Modulus of the equip restriction gives if it's exclusive to male or female
+                    (c.Item1 as GlamourCollectible).ExcelRow.EquipRestriction % 2 == (c.Item2 < 100 ? c.Item2 % 2 : c.Item2 - 102);
+                    // Flip result if going male/female only
                     if(c.Item2 > 100) exclude = !exclude;
                     return exclude;
                 }
                 return false;
             },
+            // So that we don't have to deal with gender stuff
             [2,3,102,103],
+            // TODO: localization
             ["Show All Genders", "Hide Male-Exclusive", "Hide Female-Exclusive", "Show Only Male-Exclusive", "Show Only Female-Exclusive"]
         ));
     }
