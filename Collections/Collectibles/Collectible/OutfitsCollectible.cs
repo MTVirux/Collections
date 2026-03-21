@@ -46,18 +46,18 @@ public class OutfitsCollectible : Collectible<Item>, ICreateable<OutfitsCollecti
             var icon = c.GetIcon();
             if (icon != null)
             {
-                var origPos = ImGui.GetCursorPos();
                 ImGui.Image(icon.GetWrapOrEmpty().Handle, new Vector2(iconSize, iconSize));
+                if (i < collectibles.Count - 1)
+                {
+                    ImGui.SameLine();
+                }
                 var finalPos = ImGui.GetCursorPos();
                 c.UpdateObtainedState();
                 if (c.GetIsObtained())
                 {
                     var _ = true;
-                    UiHelper.IconButtonWithOffset(i, FontAwesomeIcon.Check, ImGui.ImGuiStyle().ItemSpacing.X + ImGui.GetFontSize(), -iconSize + ImGui.GetFontSize(), ref _, .735f, new Vector4(1f, .741f, .188f, 1), ColorsPalette.BLACK.WithAlpha(0));
-                }
-                if (i < collectibles.Count - 1)
-                {
-                    ImGui.SameLine();
+                    UiHelper.IconButtonWithOffset(i, FontAwesomeIcon.Check, ImGui.GetFontSize() * .735f, -iconSize + ImGui.GetFontSize() * .735f, ref _, .735f, new Vector4(1f, .741f, .188f, 1), ColorsPalette.BLACK.WithAlpha(0));
+                    ImGui.SetCursorPos(finalPos);
                 }
             }
         }

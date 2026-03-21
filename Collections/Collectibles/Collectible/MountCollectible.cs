@@ -67,7 +67,8 @@ public class MountCollectible : Collectible<Mount>, ICreateable<MountCollectible
     public override void DrawAdditionalTooltip()
     {
         var pic = Services.TextureProvider.GetFromGameIcon(new GameIconLookup((uint)GetImageId()));
-        ImGui.Image(pic.GetWrapOrEmpty().Handle, pic.GetWrapOrEmpty().Size * UiHelper.ScaleForFontSize(0.85f));
+        var imageSize = pic.GetWrapOrEmpty().Size * UiHelper.ScaleForFontSize(.85f);
+        ImGui.Image(pic.GetWrapOrEmpty().Handle, imageSize);
         ImGui.SameLine();
         ImGui.BeginGroup();
         if (ImGui.BeginTable($"##mount-{ExcelRow.RowId}-additional-tooltip", 1))
@@ -75,7 +76,7 @@ public class MountCollectible : Collectible<Mount>, ICreateable<MountCollectible
             ImGui.TableNextColumn();
             // Acts as a spacer
             ImGui.Text("");
-            ImGui.PushTextWrapPos(UiHelper.UnitWidth() * 72);//UiHelper.GetLengthToRightOfWindow());
+            ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35);//UiHelper.GetLengthToRightOfWindow());
             ImGui.TextColored(ColorsPalette.GREY2, $"{ExcelCache<MountTransient>.GetSheet().GetRow(ExcelRow.RowId).GetValueOrDefault().DescriptionEnhanced}");
             ImGui.Text("");
             ImGui.Text($"{ExcelCache<MountTransient>.GetSheet().GetRow(ExcelRow.RowId).GetValueOrDefault().Tooltip}");

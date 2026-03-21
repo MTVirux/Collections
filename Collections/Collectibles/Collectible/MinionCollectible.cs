@@ -70,7 +70,7 @@ public class MinionCollectible : Collectible<Companion>, ICreateable<MinionColle
     {
         var pic = Services.TextureProvider.GetFromGameIcon(new GameIconLookup((uint)GetImageId()));
 
-        ImGui.Image(pic.GetWrapOrEmpty().Handle, pic.GetWrapOrEmpty().Size * UiHelper.ScaleForFontSize(1));
+        ImGui.Image(pic.GetWrapOrEmpty().Handle, pic.GetWrapOrEmpty().Size * UiHelper.ScaleForFontSize(.85f));
         ImGui.SameLine();
         ImGui.BeginGroup();
         if (ImGui.BeginTable($"##minion-{ExcelRow.RowId}-additional-tooltip", 1))
@@ -81,7 +81,7 @@ public class MinionCollectible : Collectible<Companion>, ICreateable<MinionColle
             ImGui.Text("");
             ImGui.Text($"{ExcelRow.Behavior.Value.Name.ToString()}, {ExcelRow.MinionRace.Value.Name.ToString()}");
             ImGui.Text("");
-            ImGui.PushTextWrapPos(UiHelper.UnitWidth() * 72);
+            ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35);
             ImGui.TextColored(ColorsPalette.GREY2, $"{ExcelCache<CompanionTransient>.GetSheet().GetRow(ExcelRow.RowId).GetValueOrDefault().DescriptionEnhanced}");
             ImGui.Text("");
             ImGui.Text($"{ExcelCache<CompanionTransient>.GetSheet().GetRow(ExcelRow.RowId).GetValueOrDefault().Tooltip}");

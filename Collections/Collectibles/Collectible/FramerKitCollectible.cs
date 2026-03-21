@@ -176,7 +176,7 @@ public class FramerKitCollectible : Collectible<BannerCondition>, ICreateable<Fr
         // see if we can stop here
         if (PlateBackground + PlateBanner + PlateFrame + PlateBacking + PlatePortraitFrame + PlateAccent == 0) return;
         // Create plate preview, 
-        float plateScale = UiHelper.ScaleForFontSize(0.6f);
+        float plateScale = UiHelper.ScaleForFontSize(0.3f);
 
         // Backing
         ImGui.SameLine();
