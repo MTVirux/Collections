@@ -67,7 +67,7 @@ public class MountCollectible : Collectible<Mount>, ICreateable<MountCollectible
     public override void DrawAdditionalTooltip()
     {
         var pic = Services.TextureProvider.GetFromGameIcon(new GameIconLookup((uint)GetImageId()));
-        ImGui.Image(pic.GetWrapOrEmpty().Handle, pic.GetWrapOrEmpty().Size * 0.85f);
+        ImGui.Image(pic.GetWrapOrEmpty().Handle, pic.GetWrapOrEmpty().Size * UiHelper.ScaleForFontSize(0.85f));
         ImGui.SameLine();
         ImGui.BeginGroup();
         if (ImGui.BeginTable($"##mount-{ExcelRow.RowId}-additional-tooltip", 1))

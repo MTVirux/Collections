@@ -78,7 +78,7 @@ public class GlamourCollectible : Collectible<Item>, ICreateable<GlamourCollecti
             ImGui.Text("Identical to: ");
             foreach(Item sharedModel in sharedModels)
             {
-                ImGui.Image(IconHandler.GetIcon(sharedModel.Icon).GetWrapOrEmpty().Handle, new Vector2(40, 40));
+                ImGui.Image(IconHandler.GetIcon(sharedModel.Icon).GetWrapOrEmpty().Handle, new Vector2(1, 1) * UiHelper.ScaleForFontSize(40));
                 ImGui.SameLine();
                 ImGui.Text($"{sharedModel.Name} ({sharedModel.DyeCount} dye slots)");
             }

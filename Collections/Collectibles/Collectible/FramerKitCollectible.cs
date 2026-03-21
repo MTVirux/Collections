@@ -152,7 +152,8 @@ public class FramerKitCollectible : Collectible<BannerCondition>, ICreateable<Fr
         var background = ExcelCache<BannerBg>.GetSheet().GetRow(PortraitBackground).GetValueOrDefault();
         var tex = GetFrameElementIcon(background.Image);
         var cursor = ImGui.GetCursorPos();
-        ImGui.Image(tex.GetWrapOrEmpty().Handle, tex.GetWrapOrEmpty().Size * 0.5f);
+        float portraitScale = UiHelper.ScaleForFontSize(.5f);
+        ImGui.Image(tex.GetWrapOrEmpty().Handle, tex.GetWrapOrEmpty().Size * portraitScale);
 
         if (PortraitFrame != 0)
         {
@@ -161,7 +162,7 @@ public class FramerKitCollectible : Collectible<BannerCondition>, ICreateable<Fr
             ImGui.SetItemAllowOverlap();
             var frame = ExcelCache<BannerFrame>.GetSheet().GetRow(PortraitFrame).GetValueOrDefault();
             tex = GetFrameElementIcon(frame.Image);
-            ImGui.Image(tex.GetWrapOrEmpty().Handle, tex.GetWrapOrEmpty().Size * 0.5f);
+            ImGui.Image(tex.GetWrapOrEmpty().Handle, tex.GetWrapOrEmpty().Size * portraitScale);
         }
         if(PortraitAccent != 0)
         {
@@ -170,12 +171,12 @@ public class FramerKitCollectible : Collectible<BannerCondition>, ICreateable<Fr
             ImGui.SetItemAllowOverlap();
             var accent = ExcelCache<BannerDecoration>.GetSheet().GetRow(PortraitAccent).GetValueOrDefault();
             tex = GetFrameElementIcon(accent.Image);
-            ImGui.Image(tex.GetWrapOrEmpty().Handle, tex.GetWrapOrEmpty().Size * 0.5f);
+            ImGui.Image(tex.GetWrapOrEmpty().Handle, tex.GetWrapOrEmpty().Size * portraitScale);
         }
         // see if we can stop here
         if (PlateBackground + PlateBanner + PlateFrame + PlateBacking + PlatePortraitFrame + PlateAccent == 0) return;
         // Create plate preview, 
-        float plateScale = 0.3f;
+        float plateScale = UiHelper.ScaleForFontSize(0.6f);
 
         // Backing
         ImGui.SameLine();

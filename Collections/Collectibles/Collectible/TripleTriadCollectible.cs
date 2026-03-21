@@ -53,8 +53,8 @@ public class TripleTriadCollectible : Collectible<TripleTriadCard>, ICreateable<
         var cursor = ImGui.GetCursorPos();
         // triple triad card icon start
         // draw card
-        var size = GetIcon().GetWrapOrEmpty().Size;
-        var iconSize = new Vector2(40, 40);
+        var size = GetIcon().GetWrapOrEmpty().Size * UiHelper.ScaleForFontSize(1);
+        var iconSize = new Vector2(40, 40) * UiHelper.ScaleForFontSize(1);
         ImGui.Image(GetIcon().GetWrapOrEmpty().Handle, size);
         // add values
         ImGui.SetCursorPos(cursor + ((size - iconSize) * new Vector2(0.5f, 0.75f)));

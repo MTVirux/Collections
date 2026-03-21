@@ -69,7 +69,8 @@ public class MinionCollectible : Collectible<Companion>, ICreateable<MinionColle
     public override void DrawAdditionalTooltip()
     {
         var pic = Services.TextureProvider.GetFromGameIcon(new GameIconLookup((uint)GetImageId()));
-        ImGui.Image(pic.GetWrapOrEmpty().Handle, pic.GetWrapOrEmpty().Size * 0.75f);
+
+        ImGui.Image(pic.GetWrapOrEmpty().Handle, pic.GetWrapOrEmpty().Size * UiHelper.ScaleForFontSize(1));
         ImGui.SameLine();
         ImGui.BeginGroup();
         if (ImGui.BeginTable($"##minion-{ExcelRow.RowId}-additional-tooltip", 1))

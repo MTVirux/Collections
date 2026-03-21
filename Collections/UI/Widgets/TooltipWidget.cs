@@ -2,7 +2,7 @@ namespace Collections;
 
 public class TooltipWidget
 {
-    private Vector2 iconSize = new(82, 82);
+    private int iconSize = 82;
     private Vector2 sourceIconSize = new(23, 23);
 
     private EventService EventService { get; init; }
@@ -19,8 +19,10 @@ public class TooltipWidget
         // Icon
         if (icon != null)
         {
-            ImGui.Image(icon.GetWrapOrEmpty().Handle, iconSize);
+            var origPos = ImGui.GetCursorPos();
+            ImGui.Image(icon.GetWrapOrEmpty().Handle, new Vector2(1,1) * UiHelper.ScaleForFontSize(iconSize));
             ImGui.SameLine();
+            var finalCursorPos = ImGui.GetCursorPos();
 
             // adds dye icons to the tooltips of collectibles that can be dyed
             int dyeSlots = 0;
@@ -36,13 +38,24 @@ public class TooltipWidget
             if (dyeSlots > 0)
             {
                 var _ = true;
-                UiHelper.IconButtonWithOffset(0, FontAwesomeIcon.CircleNotch, 25, 5, ref _, .8f, ColorsPalette.BLACK, ColorsPalette.GREEN);
+                ImGui.SetCursorPos(origPos + new Vector2(UiHelper.ScaleForFontSize(iconSize) - ImGui.GetFontSize(), 0) * .98f);
+                ImGui.SetItemAllowOverlap();
+                ImGui.PushStyleColor(ImGuiCol.Text, ColorsPalette.BLACK);
+                ImGui.SetWindowFontScale(.8f);
+                ImGuiComponents.IconButton(FontAwesomeIcon.CircleNotch, new Vector4(0,0,0,0), new Vector4(0,0,0,0), new Vector4(0,0,0,0));
+                ImGui.SetWindowFontScale(1f);
                 if (dyeSlots == 2)
                 {
                     ImGui.SameLine();
-                    UiHelper.IconButtonWithOffset(1, FontAwesomeIcon.CircleNotch, 30, -15, ref _, .8f, ColorsPalette.BLACK, ColorsPalette.GREEN);
+                    ImGui.SetCursorPos(origPos + new Vector2(UiHelper.ScaleForFontSize(iconSize) - ImGui.GetFontSize(), ImGui.GetFontSize()) * .98f);
+                    ImGui.SetWindowFontScale(.8f);
+                    ImGuiComponents.IconButton(FontAwesomeIcon.CircleNotch, new Vector4(0,0,0,0), new Vector4(0,0,0,0), new Vector4(0,0,0,0));
+                    ImGui.SetWindowFontScale(1f);
+                    // UiHelper.IconButtonWithOffset(1, FontAwesomeIcon.CircleNotch, iconSize - ImGui.GetFontSize(), -ImGui.GetFontSize(), ref _, .8f, ColorsPalette.BLACK, ColorsPalette.GREEN);
+                    ImGui.SameLine();
                 }
-                ImGui.SameLine();
+                ImGui.PopStyleColor();
+                ImGui.SetCursorPos(finalCursorPos);
             }
         }
 
@@ -179,7 +192,7 @@ public class TooltipWidget
                             icon = costItem.collectibleKey.GetIcon();
                             if (icon != null)
                             {
-                                ImGui.Image(icon.GetWrapOrEmpty().Handle, new Vector2(icon.GetWrapOrEmpty().Width / 3, icon.GetWrapOrEmpty().Height / 3));
+                                ImGui.Image(icon.GetWrapOrEmpty().Handle, icon.GetWrapOrEmpty().Size * UiHelper.ScaleForFontSize(.33f));
                                 ImGui.SameLine();
                             }
 
@@ -197,7 +210,7 @@ public class TooltipWidget
                         icon = source.GetIcon();
                         if (icon != null)
                         {
-                            ImGui.Image(icon.GetWrapOrEmpty().Handle, sourceIconSize);
+                            ImGui.Image(icon.GetWrapOrEmpty().Handle, sourceIconSize * UiHelper.ScaleForFontSize(1));
                             ImGui.SameLine();
                         }
                         ImGui.PushTextWrapPos(UiHelper.UnitWidth() * 50);

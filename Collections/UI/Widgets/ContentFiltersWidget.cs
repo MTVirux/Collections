@@ -75,7 +75,7 @@ public class ContentFiltersWidget
         // Draw button as a group
         UiHelper.GroupWithMinWidth(() =>
         {
-            ImGui.Image(icons[collectibleSourceCategory].GetWrapOrEmpty().Handle, iconSize * (ImGui.GetFontSize() / 16));
+            ImGui.Image(icons[collectibleSourceCategory].GetWrapOrEmpty().Handle, iconSize * UiHelper.ScaleForFontSize(1));
             ImGui.SameLine();
             ImGui.Text(collectibleSourceCategory.GetEnumName().ToSentence().TrimStart(' '));
             //ImGui.Text(hint1);

@@ -7,7 +7,7 @@ public class JobSelectorWidget
     public Dictionary<ClassJob, bool> Filters;
 
     private const int JobIconScale = 7;
-    private int iconSize = 25;
+    private int iconSize = 28;
     private Vector2 overrideItemSpacing = new(2, 1);
 
     // Specific filter for "All Classes" items
@@ -67,7 +67,7 @@ public class JobSelectorWidget
                 if (icon != null)
                 {
                     // Button
-                    UiHelper.ImageToggleButton(icon, new Vector2(iconSize, iconSize) * (ImGui.GetFontSize() / 14), Filters[job]);
+                    UiHelper.ImageToggleButton(icon, new Vector2(iconSize, iconSize) * UiHelper.ScaleForFontSize(1), Filters[job]);
 
                     // Left click - Switch to selection
                     if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
@@ -97,7 +97,7 @@ public class JobSelectorWidget
             ImGui.Text("");
         }
         // "All Classes" Icon Button
-        UiHelper.ImageToggleButton(IconHandler.GetIcon(62522), new Vector2(iconSize, iconSize) * (ImGui.GetFontSize() / 14), allClasses);
+        UiHelper.ImageToggleButton(IconHandler.GetIcon(62522), new Vector2(iconSize, iconSize) * UiHelper.ScaleForFontSize(1), allClasses);
         if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
         {
             var newState = IsAllActive() ? true : !allClasses;
@@ -118,7 +118,7 @@ public class JobSelectorWidget
         }
         // Job-specific gear (Artifact basically)
         ImGui.SameLine();
-        UiHelper.ImageToggleButton(IconHandler.GetIcon(62521), new Vector2(iconSize, iconSize) * (ImGui.GetFontSize() / 14), jobSpecific);
+        UiHelper.ImageToggleButton(IconHandler.GetIcon(62521), new Vector2(iconSize, iconSize) * UiHelper.ScaleForFontSize(1), jobSpecific);
         if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
         {
             var newState = IsAllActive() ? true : !jobSpecific;

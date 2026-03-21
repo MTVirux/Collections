@@ -42,7 +42,7 @@ public class EquipSlotsWidget
     public unsafe void Draw()
     {
         // max size of a slot if active. 
-        float slotSize = ImGui.GetFontSize() * 2.9f;
+        float slotSize = UiHelper.ScaleForFontSize(50.2f);
         // ratio to scale slot icons by
         const float iconScale = .916f;
         var bgColor = *ImGui.GetStyleColorVec4(ImGuiCol.WindowBg);

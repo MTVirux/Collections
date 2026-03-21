@@ -19,7 +19,6 @@ public class ColorsPalette
 
 public class UiHelper
 {
-
     public static float UnitHeight()
     {
         return ImGui.CalcTextSize("A").Y;
@@ -28,6 +27,13 @@ public class UiHelper
     public static float UnitWidth()
     {
         return ImGui.CalcTextSize("A").X;
+    }
+
+    // Returns the scaling that should be used based on font
+    public static float ScaleForFontSize(float original)
+    {
+        // 17 is the default font size for 100% scaling
+        return ImGui.GetFontSize() / 17 * original;
     }
 
     public static float GetLengthToBottomOfWindow()

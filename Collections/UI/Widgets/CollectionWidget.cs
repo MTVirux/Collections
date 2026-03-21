@@ -5,7 +5,8 @@ namespace Collections;
 
 public class CollectionWidget
 {
-    private float iconSize = 65f;
+    private const float IconSize = 68f;
+    private float iconSizeScaled = 68f;
     private int pageSortWidgetWidth = "Sort By".Length * 13;
     private string searchFilter = ""; 
     public CollectibleSortOption PageSortOption { get; set; }
@@ -29,7 +30,7 @@ public class CollectionWidget
         {
             cachedFilters = filterOptions;
         }
-        iconSize = ImGui.GetFontSize() * 4;
+        iconSizeScaled = UiHelper.ScaleForFontSize(IconSize);
     }
 
     private int obtainedState = 0;
@@ -44,9 +45,9 @@ public class CollectionWidget
             DrawFilters();
         }
         // separate to prevent constant reassignment
-        if(iconSize != ImGui.GetFontSize() * 4)
+        if(iconSizeScaled != UiHelper.ScaleForFontSize(IconSize))
         {
-            iconSize = ImGui.GetFontSize() * 4;
+            iconSizeScaled = UiHelper.ScaleForFontSize(IconSize);
         }
 
         drawItemCount = 0;
@@ -59,7 +60,7 @@ public class CollectionWidget
         ImGuiListClipper clipper = new ImGuiListClipper();
 
         // clipper based on the number of items per row, not items themselves
-        clipper.Begin((int)Math.Ceiling(collectionList.Count / (double)iconsPerRow), iconSize);
+        clipper.Begin((int)Math.Ceiling(collectionList.Count / (double)iconsPerRow), iconSizeScaled);
         if (ImGui.BeginChild("scroll-area"))
         {
             // using full collection instead of clipped one, due to variable heights from the headers, and variable rows from ending early. We could in theory change
@@ -276,7 +277,7 @@ public class CollectionWidget
         var icon = collectible.GetIcon();
 
         var tint = collectible.GetIsObtained() ? defaultTint : ColorsPalette.GREY2;
-        if (ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new Vector2(iconSize, iconSize), default, new Vector2(1f, 1f), -1, default, tint))
+        if (ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new Vector2(iconSizeScaled, iconSizeScaled), default, new Vector2(1f, 1f), -1, default, tint))
         {
         }
 
@@ -350,13 +351,13 @@ public class CollectionWidget
         var obtained = collectible.GetIsObtained();
         // color
         // UiHelper.IconButtonWithOffset(drawItemCount, FontAwesomeIcon.Check, iconSize, 0, ref obtained, 1.0f, new Vector4(1f, .741f, .188f, 1), ColorsPalette.BLACK.WithAlpha(0));
-        UiHelper.IconButtonWithOffset(drawItemCount, FontAwesomeIcon.Check, ImGui.GetStyle().ItemSpacing.X * 2 + ImGui.GetFontSize(), -iconSize + ImGui.GetFontSize(), ref obtained, 1.0f, new Vector4(1f, .741f, .188f, 1), ColorsPalette.BLACK.WithAlpha(0));
+        UiHelper.IconButtonWithOffset(drawItemCount, FontAwesomeIcon.Check, ImGui.GetStyle().ItemSpacing.X * 2 + ImGui.GetFontSize(), -iconSizeScaled + ImGui.GetFontSize(), ref obtained, 1.0f, new Vector4(1f, .741f, .188f, 1), ColorsPalette.BLACK.WithAlpha(0));
     }
 
     private int GetIconsPerRow()
     {
         // Window Size / Icon Size + ImGui Item Padding x 2;
-        return (int)Math.Floor((ImGui.GetWindowWidth() - ImGui.GetCursorPosX()) / (iconSize + (ImGui.GetStyle().ItemSpacing.X * 2)));
+        return (int)Math.Floor((ImGui.GetWindowWidth() - ImGui.GetCursorPosX()) / (iconSizeScaled + (ImGui.GetStyle().ItemSpacing.X * 2)));
     }
 
     public bool IsFiltered(ICollectible collectible)
