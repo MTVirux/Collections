@@ -276,7 +276,7 @@ public class EquipSlotsWidget
         currentGlamourSet.GetItem(equipSlot)?.Stain0Id = paletteWidgets[equipSlot].ActiveStainPrimary.RowId;
         currentGlamourSet.GetItem(equipSlot)?.Stain1Id = paletteWidgets[equipSlot].ActiveStainSecondary.RowId;
         // If Dye changed for empty equip slot - use the characters equipped item
-        if (glamourItem is null || Configuration.GetConfig().SeparatePreviewAndApply)
+        if (glamourItem is null || Services.Configuration.SeparatePreviewAndApply)
         {
             Services.PreviewExecutor.PreviewWithTryOnRestrictions(
                 equipSlot,

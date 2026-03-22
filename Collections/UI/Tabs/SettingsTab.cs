@@ -5,6 +5,7 @@ public class SettingsTab : IDrawable
     private List<string> collectionNames = new();
     public SettingsTab()
     {
+        separatePreviewAndApply = Services.Configuration.SeparatePreviewAndApply;
         showAdditionalTooltips = Services.Configuration.AdditionalTooltips;
         autoOpenInstanceTab = Services.Configuration.AutoOpenInstanceTab;
         onlyOpenIfUncollected = Services.Configuration.OnlyOpenIfUncollected;

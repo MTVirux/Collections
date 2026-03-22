@@ -250,7 +250,7 @@ public class CollectionWidget
         }
     }
 
-    private unsafe void DrawAdvancedFilters()
+    private void DrawAdvancedFilters()
     {
         ImGui.SameLine();
         if (ImGui.Button("More Filters"))
