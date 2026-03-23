@@ -13,6 +13,7 @@ public class CurrencyDataGenerator
         { 00025, SourceCategory.PvP }, // Wolf Mark
         { 21067, SourceCategory.PvP }, // Wolf Collar
         { 36656, SourceCategory.PvP }, // Trophy Crystals
+        { 40479, SourceCategory.PvP }, // Commendation Crystals
         { 30341, SourceCategory.Duty }, // Faux Leaves
         { 00027, SourceCategory.TheHunt }, // Allied Seal
         { 10307, SourceCategory.TheHunt }, // Centurio Seal
