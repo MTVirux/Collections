@@ -54,8 +54,8 @@ public class GlassesCollectible: Collectible<Glasses>, ICreateable<GlassesCollec
     {
         // Look into using Character->DrawData.SetGlasses(0, (ushort)glassesId);
         // Most likely need to handle this via PreviewExecutor to not clutter everything.
-        if (isObtained)
-            ActionManager.Instance()->UseAction(ActionType.Unk12, ExcelRow.RowId);
+        // if (isObtained)
+        //     ActionManager.Instance()->UseAction(ActionType.Unk12, ExcelRow.RowId);
     }
 
     public override void OpenGamerEscape()

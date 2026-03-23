@@ -56,7 +56,7 @@ public class OutfitsCollectible : Collectible<Item>, ICreateable<OutfitsCollecti
                 if (c.GetIsObtained())
                 {
                     var _ = true;
-                    UiHelper.IconButtonWithOffset(i, FontAwesomeIcon.Check, ImGui.GetFontSize() * .735f, -iconSize + ImGui.GetFontSize() * .735f, ref _, .735f, new Vector4(1f, .741f, .188f, 1), ColorsPalette.BLACK.WithAlpha(0));
+                    UiHelper.IconButtonWithOffset(i, FontAwesomeIcon.Check, ImGui.GetFontSize() + (ImGui.ImGuiStyle().ItemSpacing.X * (17 / ImGui.GetFontSize())), -iconSize + ImGui.GetFontSize(), ref _, .735f, new Vector4(1f, .741f, .188f, 1), ColorsPalette.BLACK.WithAlpha(0));
                     ImGui.SetCursorPos(finalPos);
                 }
             }
