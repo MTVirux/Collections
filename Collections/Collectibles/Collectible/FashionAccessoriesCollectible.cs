@@ -40,9 +40,9 @@ public class FashionAccessoriesCollectible: Collectible<Ornament>, ICreateable<F
         return ExcelCache<OrnamentTransient>.GetSheet().GetRow(ExcelRow.RowId).Value.Text.ToString() ?? "";
     }
 
-    public override unsafe void UpdateObtainedState()
+    public override void UpdateObtainedState()
     {
-        isObtained = PlayerState.Instance()->IsOrnamentUnlocked(ExcelRow.RowId);
+        isObtained = Services.UnlockState.IsOrnamentUnlocked(ExcelRow);
     }
 
     protected override int GetIconId()

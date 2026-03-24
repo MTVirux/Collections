@@ -12,13 +12,12 @@ public class QuestSource : CollectibleSource
     {
         return Quest.Name.ToString();
     }
-
     private List<SourceCategory> sourceType = new List<SourceCategory>() { SourceCategory.Quest };
     public override List<SourceCategory> GetSourceCategories()
     {
         return sourceType;
     }
-
+    
     public override bool GetIslocatable()
     {
         return false;

@@ -1,3 +1,5 @@
+using Lumina.Extensions;
+
 namespace Collections;
 
 public class KeysDataGenerator
@@ -27,6 +29,7 @@ public class KeysDataGenerator
         PopulateInstanceData();
         PopulateAchievementData();
         PopulateMiscData();
+        PopulateBannerUnlockData();
         PopulateBlueSpellData();
     }
 
@@ -73,7 +76,12 @@ public class KeysDataGenerator
             }
             else if (type == FramerKitItemActionType)
             {
-                AddCollectibleKeyEntry(collectibleIdToItem, typeof(Item), item.AdditionalData.RowId, item);
+                // can't use RowId here
+                BannerCondition? found = ExcelCache<BannerCondition>.GetSheet().Where(cond => cond.UnlockType1 == 9 && cond.UnlockCriteria1.First().RowId == item.AdditionalData.RowId).FirstOrNull();
+                if(found != null)
+                {
+                    AddCollectibleKeyEntry(collectibleIdToItem, typeof(BannerCondition), found.Value.RowId, item);
+                }
             }
         }
     }
@@ -89,6 +97,7 @@ public class KeysDataGenerator
             }
         }
 
+        // Emote Unlock Data
         foreach (var emote in ExcelCache<Emote>.GetSheet())
         {
             if (emote.UnlockLink > ExcelCache<Quest>.GetSheet().First().RowId && emote.UnlockLink < ExcelCache<Quest>.GetSheet().Last().RowId)
@@ -131,7 +140,7 @@ public class KeysDataGenerator
             }
         }
     }
-    
+
     private void PopulateMiscData()
     {
         foreach (var (type, dict) in DataOverrides.collectibleIdToUnlockMisc)
@@ -139,6 +148,25 @@ public class KeysDataGenerator
             foreach (var (collectibleId, misc) in dict)
             {
                 AddCollectibleKeyEntry(collectibleIdToMisc, type, collectibleId, misc);
+            }
+        }
+    }
+
+    private void PopulateBannerUnlockData()
+    {
+        foreach (var cond in ExcelCache<BannerCondition>.GetSheet())
+        {
+            if (cond.UnlockType1 == 1 && cond.UnlockType2 == 2)
+            {
+                AddCollectibleKeyEntry(collectibleIdToQuest, typeof(BannerCondition), cond.RowId, cond.UnlockCriteria1.First().GetValueOrDefault<Quest>().Value);
+            }
+            else if (cond.UnlockType1 == 4)
+            {
+                AddCollectibleKeyEntry(collectibleIdToInstance, typeof(BannerCondition), cond.RowId, cond.UnlockCriteria1.First().GetValueOrDefault<InstanceContent>().Value.ContentFinderCondition.Value);
+            }
+            else if (cond.UnlockType1 == 11)
+            {
+                AddCollectibleKeyEntry(collectibleIdToMisc, typeof(BannerCondition), cond.RowId, "Crystalline Conflict Season Reward");
             }
         }
     }

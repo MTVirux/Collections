@@ -2,6 +2,8 @@ namespace Collections;
 
 public class QuestKey : CollectibleKey<(Quest, int)>, ICreateable<QuestKey, (Quest, int)>
 {
+
+    
     public QuestKey((Quest, int) input) : base(input)
     {
     }

@@ -1,7 +1,4 @@
-using FFXIVClientStructs.FFXIV.Client.Game;
-using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
-using FFXIVClientStructs.FFXIV.Client.Game.UI;
 
 namespace Collections;
 
@@ -36,12 +33,26 @@ public class EmoteCollectible : Collectible<Emote>, ICreateable<EmoteCollectible
 
     protected override string GetDescription()
     {
-        return "";
+        return ExcelRow.TextCommand.Value.Description.ToString();
     }
 
-    public override unsafe void UpdateObtainedState()
+    public override void UpdateObtainedState()
     {
-        isObtained = UIState.Instance()->IsEmoteUnlocked((ushort)ExcelRow.RowId);
+        isObtained = Services.UnlockState.IsEmoteUnlocked(ExcelRow);
+    }
+
+    protected override decimal GetPatchAdded()
+    {
+        // emotes now have patch data baked in! Yay!
+        if(ExcelRow.Patch > 1)
+        {
+            int majorPatch = ExcelRow.Patch / 100; // truncating
+            int minorPatch = ExcelRow.Patch - (majorPatch * 100);
+            if(minorPatch % 10 == 0) minorPatch /= 10;
+            if(decimal.TryParse($"{majorPatch}.{minorPatch}", out decimal temp))
+                return temp;
+        }
+        return base.GetPatchAdded();
     }
 
     protected override int GetIconId()

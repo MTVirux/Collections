@@ -1,16 +1,21 @@
+using System.Drawing;
+using Dalamud.Interface.Colors;
+
 namespace Collections;
 
 public class CollectionWidget
 {
-    private float iconSize = 65f;
+    private const float IconSize = 68f;
+    private float iconSizeScaled = 68f;
     private int pageSortWidgetWidth = "Sort By".Length * 13;
     private string searchFilter = ""; 
     public CollectibleSortOption PageSortOption { get; set; }
     private List<CollectibleSortOption> cachedOptions = [];
+    private List<CollectibleFilterOption> cachedFilters = [];
     private bool isGlam { get; init; } = false;
     private EventService EventService { get; init; }
     private TooltipWidget CollectibleTooltipWidget { get; init; }
-    public CollectionWidget(EventService eventService, bool isGlam, List<CollectibleSortOption>? collectibleSortOptions = null)
+    public CollectionWidget(EventService eventService, bool isGlam, List<CollectibleSortOption>? collectibleSortOptions = null, List<CollectibleFilterOption>? filterOptions = null)
     {
         EventService = eventService;
         this.isGlam = isGlam;
@@ -21,6 +26,11 @@ public class CollectionWidget
             PageSortOption = collectibleSortOptions.First();
             cachedOptions = collectibleSortOptions;
         }
+        if(filterOptions != null && filterOptions.Count > 1)
+        {
+            cachedFilters = filterOptions;
+        }
+        iconSizeScaled = UiHelper.ScaleForFontSize(IconSize);
     }
 
     private int obtainedState = 0;
@@ -34,6 +44,11 @@ public class CollectionWidget
         {
             DrawFilters();
         }
+        // separate to prevent constant reassignment
+        if(iconSizeScaled != UiHelper.ScaleForFontSize(IconSize))
+        {
+            iconSizeScaled = UiHelper.ScaleForFontSize(IconSize);
+        }
 
         drawItemCount = 0;
         var iconsPerRow = GetIconsPerRow();
@@ -45,7 +60,7 @@ public class CollectionWidget
         ImGuiListClipper clipper = new ImGuiListClipper();
 
         // clipper based on the number of items per row, not items themselves
-        clipper.Begin((int)Math.Ceiling(collectionList.Count / (double)iconsPerRow), iconSize);
+        clipper.Begin((int)Math.Ceiling(collectionList.Count / (double)iconsPerRow), iconSizeScaled);
         if (ImGui.BeginChild("scroll-area"))
         {
             // using full collection instead of clipped one, due to variable heights from the headers, and variable rows from ending early. We could in theory change
@@ -57,7 +72,7 @@ public class CollectionWidget
                 for (int i = 0; i < collectionList.Count; i++)
                 {
                     var collectible = collectionList[i];
-                    var icon = collectible.GetIconLazy();
+                    var icon = collectible.GetIcon();
 
                     if (icon is null)
                     {
@@ -98,7 +113,7 @@ public class CollectionWidget
                             if (i >= collectionList.Count) break;
 
                             var collectible = collectionList[i];
-                            var icon = collectible.GetIconLazy();
+                            var icon = collectible.GetIcon();
 
                             if (icon is null)
                             {
@@ -137,6 +152,8 @@ public class CollectionWidget
         ImGui.SameLine(ImGui.GetColumnWidth() - pageSortWidgetWidth + 4, 0);
         DrawSortOptions();
 
+        
+
         ImGui.Text("Show:");
         ImGui.SameLine();
 
@@ -159,6 +176,8 @@ public class CollectionWidget
         {
             EventService.Publish<FilterChangeEvent, FilterChangeEventArgs>(new FilterChangeEventArgs(itemStatusFilter: CollectibleStatusFilter.Favorite));
         }
+        // Advanced Filters
+        DrawAdvancedFilters();
 
         if (isGlam)
         {
@@ -200,7 +219,7 @@ public class CollectionWidget
     {
         if (cachedOptions.Count == 0) return;
         ImGui.SetNextItemWidth(pageSortWidgetWidth);
-        
+
         if (ImGui.BeginCombo($"##sortCollectionDropdown", "Sort By", ImGuiComboFlags.HeightRegular))
         {
             foreach (var sortOpt in cachedOptions)
@@ -231,6 +250,21 @@ public class CollectionWidget
         }
     }
 
+    private void DrawAdvancedFilters()
+    {
+        ImGui.SameLine();
+        if (ImGui.Button("More Filters"))
+            ImGui.OpenPopup("##advancedFilters", ImGuiPopupFlags.None);
+        if(ImGui.BeginPopup("##advancedFilters"))
+        {
+            foreach(var filter in cachedFilters)
+            {
+                filter.Draw(service: EventService);
+            }
+            ImGui.EndPopup(); 
+        }
+    }
+
     private int drawItemCount = 0;
     private Vector4 defaultTint = new(1f, 1f, 1f, 1f);
     private unsafe void DrawItem(ICollectible collectible)
@@ -238,15 +272,15 @@ public class CollectionWidget
         // for debouncing, prevents interaction and favorite at the same time.
         bool interact = false;
         bool debounce = false;
-        var icon = collectible.GetIconLazy();
 
-        ImGui.SetItemAllowOverlap();
+        // to properly draw everything
+        var icon = collectible.GetIcon();
 
         var tint = collectible.GetIsObtained() ? defaultTint : ColorsPalette.GREY2;
-
-        if (ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new Vector2(iconSize, iconSize), default, new Vector2(1f, 1f), -1, default, tint))
+        if (ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new Vector2(iconSizeScaled, iconSizeScaled), default, new Vector2(1f, 1f), -1, default, tint))
         {
         }
+
         if (ImGui.IsItemClicked())
         {
             interact = true;
@@ -268,14 +302,24 @@ public class CollectionWidget
         // Details on click
         if (ImGui.BeginPopupContextItem($"click-glam-item##{collectible.GetHashCode()}", ImGuiPopupFlags.MouseButtonRight))
         {
+            if(collectible.GetType() == typeof(GlamourCollectible))
+            {
+                if(ImGui.Button("Apply to Glamour Slot"))
+                {
+                    Dev.Log("Publishing GlamourItemChangeEvent");
+                    EventService.Publish<GlamourItemChangeEvent, GlamourItemChangeEventArgs>(new GlamourItemChangeEventArgs((GlamourCollectible)collectible, true));
+                }
+            }
             CollectibleTooltipWidget.DrawItemTooltip(collectible);
             ImGui.EndPopup();
         }
 
         // Favorite
         var isFavorite = collectible.IsFavorite();
-        UiHelper.IconButtonWithOffset(drawItemCount, FontAwesomeIcon.Star, 33, 0, ref isFavorite, 0.9f);
-        if(ImGui.IsItemClicked()) {
+        ImGui.SetItemAllowOverlap();
+        UiHelper.IconButtonWithOffset(drawItemCount, FontAwesomeIcon.Star, ImGui.GetStyle().ItemSpacing.X * 2 + ImGui.GetFontSize(), 0, ref isFavorite, 1.0f);
+        if(ImGui.IsItemClicked())
+        {
             debounce = true;
         }
         if (isFavorite != collectible.IsFavorite())
@@ -303,17 +347,17 @@ public class CollectionWidget
             }
         }
         
-        // Mimicks the official FFXIV Yellow checkmark1
+        // Mimicks the official FFXIV Yellow checkmark
         var obtained = collectible.GetIsObtained();
-        // shadow
-        UiHelper.IconButtonWithOffset(drawItemCount, FontAwesomeIcon.Check, 32, -48, ref obtained, 1.1f, new Vector4(1f, .741f, .188f, 1).Darken(.7f), ColorsPalette.BLACK.WithAlpha(0));
         // color
-        UiHelper.IconButtonWithOffset(drawItemCount, FontAwesomeIcon.Check, 33, -48, ref obtained, 1.0f, new Vector4(1f, .741f, .188f, 1), ColorsPalette.BLACK.WithAlpha(0));
+        // UiHelper.IconButtonWithOffset(drawItemCount, FontAwesomeIcon.Check, iconSize, 0, ref obtained, 1.0f, new Vector4(1f, .741f, .188f, 1), ColorsPalette.BLACK.WithAlpha(0));
+        UiHelper.IconButtonWithOffset(drawItemCount, FontAwesomeIcon.Check, ImGui.GetStyle().ItemSpacing.X * 2 + ImGui.GetFontSize(), -iconSizeScaled + ImGui.GetFontSize(), ref obtained, 1.0f, new Vector4(1f, .741f, .188f, 1), ColorsPalette.BLACK.WithAlpha(0));
     }
 
     private int GetIconsPerRow()
     {
-        return (int)Math.Floor((UiHelper.GetLengthToRightOfWindow() - UiHelper.UnitWidth()) / (iconSize + (UiHelper.UnitWidth() * 2)));
+        // Window Size / Icon Size + ImGui Item Padding x 2;
+        return (int)Math.Floor((ImGui.GetWindowWidth() - ImGui.GetCursorPosX()) / (iconSizeScaled + (ImGui.GetStyle().ItemSpacing.X * 2)));
     }
 
     public bool IsFiltered(ICollectible collectible)
@@ -331,7 +375,15 @@ public class CollectionWidget
             return true;
         if (obtainedState == 3 && !collectible.IsFavorite())
             return true;
-
+        
+        // supplied filters
+        foreach(var filter in cachedFilters)
+        {
+            if(filter.IsFiltered(collectible))
+            {
+                return true;
+            }
+        }
         // Default
         return false;
     }

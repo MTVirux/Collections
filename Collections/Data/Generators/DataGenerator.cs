@@ -16,6 +16,7 @@ public class DataGenerator
 
     private async Task AsyncInitializeDataGenerators()
     {
+        
         var NpcLocationDataGeneratorTask = Task.Run(() => new NpcLocationDataGenerator());
         var KeysDataGeneratorTask = Task.Run(() => new KeysDataGenerator());
         var CurrencyDataGeneratorTask = Task.Run(() => new CurrencyDataGenerator());

@@ -4,11 +4,9 @@ namespace Collections;
 
 public class ItemKey : CollectibleKey<(Item, int)>, ICreateable<ItemKey, (Item, int)>
 {
-    private IconHandler iconHandler { get; init; }
 
     public ItemKey((Item, int) input) : base(input)
     {
-        iconHandler = new IconHandler(input.Item1.Icon);
     }
 
     public static ItemKey Create((Item, int) input)
@@ -85,6 +83,25 @@ public class ItemKey : CollectibleKey<(Item, int)>, ICreateable<ItemKey, (Item, 
         if (dataGenerator.CraftingDataGenerator.data.TryGetValue(excelRow.RowId, out var recipes))
         {
             collectibleSources.AddRange(recipes.Select(entry => new CraftingSource(entry)));
+            // Go one level lower and add instance sources for materials
+            foreach(var recipe in recipes)
+            {
+                foreach(var item in ExcelCache<Recipe>.GetSheet().GetRow(recipe).GetValueOrDefault().Ingredient)
+                {
+                    if(!item.ValueNullable.HasValue || !dataGenerator.InstancesDataGenerator.data.TryGetValue(item.Value.RowId, out var instance))
+                        continue;
+                    // Treasure Map Exclusive ingredients
+                    // All Treasure map exclusive mat items (and voyage items) have a low sell price of 1
+                    if(item.Value.ItemSortCategory.RowId == 16 && item.Value.PriceLow == 1 && item.Value.Lot && (item.Value.PriceMid == 99999 || item.Value.Unknown4 == 2000 || item.Value.Unknown4 == 4000 || item.Value.Unknown4 == 64000))
+                        collectibleSources.AddRange(instance.Select(duty => new InstanceSource(duty)));
+                    // Raid Crafting Items
+                    if(item.Value.ItemSortCategory.RowId == 18 && item.Value.Lot)
+                        collectibleSources.AddRange(instance.Select(duty => new InstanceSource(duty)));
+                    // Tattered Orchestrion Rolls
+                    if(item.Value.ItemSearchCategory.RowId == 80 && item.Value.Unknown4 == 20000)
+                        collectibleSources.AddRange(instance.Select(duty => new InstanceSource(duty)));
+                }
+            }
         }
 
         if (dataGenerator.SubmarineDataGenerator.data.TryGetValue(excelRow.RowId, out var submarines))
@@ -116,14 +133,14 @@ public class ItemKey : CollectibleKey<(Item, int)>, ICreateable<ItemKey, (Item, 
         return sourceCategories;
     }
 
-    public ISharedImmediateTexture GetIconLazy()
+    public ISharedImmediateTexture GetIcon()
     {
-        return iconHandler.GetIconLazy();
+        return IconHandler.GetIcon(Input.Item1.Icon);
     }
 
     public override Tradeability GetIsTradeable()
     {
-        return !Input.Item1.IsUntradable ? Tradeability.Tradeable : Tradeability.UntradeableSingle;
+        return !Input.Item1.IsUntradable ? Tradeability.Tradeable : Tradeability.Untradeable;
     }
 
     private World? homeWorld = null;
@@ -139,11 +156,8 @@ public class ItemKey : CollectibleKey<(Item, int)>, ICreateable<ItemKey, (Item, 
         if (!marketBoardPriceScheduled)
         {
             marketBoardPriceScheduled = true;
-            var world = Services.ClientState.LocalPlayer?.CurrentWorld.Value;
-            if (world != null)
-            {
-                homeWorld = (World)world;
-            }
+            var world = Services.PlayerState.CurrentWorld.Value;
+            homeWorld = world;
             Task.Run(async () =>
             {
                 await Services.UniversalisClient.populateMarketBoardData(Input.Item1.RowId, homeWorld);

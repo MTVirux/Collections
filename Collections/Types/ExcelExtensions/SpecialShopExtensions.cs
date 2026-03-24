@@ -1,4 +1,5 @@
 using Collections;
+using FFXIVClientStructs.FFXIV.Client.Game;
 public static class SpecialShopExtensions
 {
     public static Dictionary<uint, uint> BuildTomestones(this SpecialShop shop)
@@ -18,9 +19,8 @@ public static class SpecialShopExtensions
         return tomeStones;
     }
 
-    public static uint FixItemId(this SpecialShop shop, uint itemId, byte UseCurrencyType)
+    public static unsafe uint FixItemId(this SpecialShop shop, uint itemId, byte UseCurrencyType, CurrencyManager* currencyManager)
     {
-
         if (itemId == 0 || itemId > 7)
         {
             return itemId;
@@ -30,13 +30,20 @@ public static class SpecialShopExtensions
         {
             // Scrips
             case 16:
+                uint refId = currencyManager->GetItemIdBySpecialId((byte)itemId);
                 switch (itemId)
                 {
+                    // Poetics
                     case 1: return 28;
-                    case 2: return 25199;
-                    case 4: return 25200;
-                    case 6: return 33913;
-                    case 7: return 33914;
+                    // Last-latest Crafting Scrip
+                    case 2:
+                    // Last-latest Gathering Scrip
+                    case 4:
+                    // Latest Crafting Scrip
+                    case 6:
+                    // Latest Gathering Scrip
+                    case 7:
+                        return refId;
                     default: return itemId;
                 }
             // Gil

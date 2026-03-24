@@ -1,3 +1,4 @@
+using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
 
 namespace Collections;
@@ -18,7 +19,6 @@ public class ColorsPalette
 
 public class UiHelper
 {
-
     public static float UnitHeight()
     {
         return ImGui.CalcTextSize("A").Y;
@@ -27,6 +27,13 @@ public class UiHelper
     public static float UnitWidth()
     {
         return ImGui.CalcTextSize("A").X;
+    }
+
+    // Returns the scaling that should be used based on font
+    public static float ScaleForFontSize(float original)
+    {
+        // 17 is the default font size for 100% scaling
+        return ImGui.GetFontSize() / 17 * original;
     }
 
     public static float GetLengthToBottomOfWindow()
@@ -40,8 +47,8 @@ public class UiHelper
     {
         var cursorX = ImGui.GetCursorPos().X;
         var windowX = ImGui.GetWindowSize().X;
-        var unitX = ImGui.CalcTextSize(" ").X;
-        return windowX - cursorX - unitX;
+        // var unitX = ImGui.CalcTextSize(" ").X;
+        return windowX - cursorX;
     }
 
     public static float GetScrollPosition()
@@ -123,12 +130,12 @@ public class UiHelper
         ImGuiComponents.IconButtonWithText(fontAwesomeIcon, text, null, buttonColor, buttonColor);
     }
 
-    public static void IconButtonWithOffset(int id, FontAwesomeIcon fontAwesomeIcon, int Xoffset, int Yoffset, ref bool state, float scale)
+    public static void IconButtonWithOffset(int id, FontAwesomeIcon fontAwesomeIcon, float Xoffset, float Yoffset, ref bool state, float scale)
     {
-        IconButtonWithOffset(id, fontAwesomeIcon, Xoffset, Yoffset, ref state, scale, ColorsPalette.YELLOW, ColorsPalette.GREY);
+        IconButtonWithOffset(id, fontAwesomeIcon, Xoffset, Yoffset, ref state, scale, ImGuiColors.DalamudYellow, ImGuiColors.DalamudGrey);
     }
 
-    public static void IconButtonWithOffset(int id, FontAwesomeIcon fontAwesomeIcon, int Xoffset, int Yoffset, ref bool state, float scale, Vector4 enabledColor, Vector4 disabledColor)
+    public static void IconButtonWithOffset(int id, FontAwesomeIcon fontAwesomeIcon, float Xoffset, float Yoffset, ref bool state, float scale, Vector4 enabledColor, Vector4 disabledColor)
     {
         // ID
         ImGui.PushID(id);

@@ -35,13 +35,16 @@ public class DataOverrides
             {14, "Reach max Attacker rank with your Chocobo Companion"}, // Dragoon Barding
             {15, "Reach max Defender rank with your Chocobo Companion"}, // White Mage Barding
         }},
+        {typeof(BannerCondition), new Dictionary<uint, string>() {
+            {154, "Obtained via using the FINAL FANTASY XIV Companion App"}, // Companion App
+            {155, "Obtained via logging in to the FINAL FANTASY XIV Companion App while subscribed to a premium service plan"},
+            {347, "Obtained with the Performance ability."}, // Sheet Music Portrait
+        }},
     };
 
-    public static readonly Dictionary<Type, Dictionary<uint, (uint, int)>> collectibleIdToSeriesReward = new()
+    public static readonly Dictionary<Type, Dictionary<uint, (uint, int)>> collectibleIdToFeastReward = new()
     {
-        {typeof(Glasses), new Dictionary<uint, (uint, int)>() {
-            {13, (1, 15)} // Shaded Spectacles
-        }},
+        // yeesh, these are a PAIN.
     };
 
     public static readonly Dictionary<Type, Dictionary<uint, uint>> collectibleIdToUnlockInstanceId = new()
@@ -54,17 +57,53 @@ public class DataOverrides
     public static readonly Dictionary<Type, Dictionary<uint, decimal>> collectibleIdToPatchAdded = new()
     {
         {typeof(Mount), new Dictionary<uint, decimal>() {
-            {50, (decimal)2.5}, // Midgarsormr
+            {50, new decimal(2.5)}, // Midgarsormr
         }},
         {typeof(BuddyEquip), new Dictionary<uint, decimal>() {
-            {1, (decimal)2.0}, // Lominsan Saddle
-            {5, (decimal)2.0}, // Gridanian Saddle
-            {9, (decimal)2.0}, // Ul'dahn Saddle
+            {1, decimal.Parse("2.0")}, // Lominsan Saddle
+            {5, decimal.Parse("2.0")}, // Gridanian Saddle
+            {9, decimal.Parse("2.0")}, // Ul'dahn Saddle
         }},
         {typeof(CharaMakeCustomize), new Dictionary<uint, decimal>() {
-            {228, (decimal)2.4}, // Eternal Bonding
+            {228, new decimal(2.4)}, // Eternal Bonding
         }},
-        // No emotes; too many
+        // willing to do this now that they added actual patch data for new emotes
+        {typeof(Emote), new Dictionary<uint, decimal>() {
+            {23, decimal.Parse("2.0")}, // Garlean Salute
+            {24, new decimal(2.1)}, // Throw
+            {27, new decimal(2.2)}, // Step Dance
+            {28, new decimal(2.2)}, // Harvest Dance
+            {29, new decimal(2.2)}, // Ball Dance
+            {30, new decimal(2.2)}, // Manderville Dance 
+            {229, new decimal(2.3)}, // Embrace
+            {244, new decimal(2.5)}, // Most Gentlemanly
+            {283, new decimal(3.1)}, // Sundrop Dance
+            {305, new decimal(3.2)}, // Battle Stance
+            {306, new decimal(3.2)}, // Victory
+            {318, new decimal(3.3)}, // Hauchefant
+            {67862, new decimal(3.3)}, // Moogle Dance
+            {334, new decimal(3.5)}, // Spectacles
+            {332, new decimal(3.5)}, // Moonlift Dance
+            {340, new decimal(4.0)}, // Water Flip
+            {68016, new decimal(4.0)}, // Eastern Bow
+            {68498, new decimal(4.1)}, // Box
+            {68558, new decimal(4.2)}, // Greeting
+            {68612, new decimal(4.3)}, // Ponder
+            {68684, new decimal(4.4)}, // Endure
+            {68688, new decimal(4.4)}, // Hum 
+            {68700, new decimal(4.5)}, // Gratuity
+            {68704, new decimal(4.5)}, // Manderville Mambo
+            {69095, new decimal(5.0)}, // Lali-Ho
+        }},
+        // Hate this even more, but even if we did have quest patch data, we still have to manually override these particular ones
+        {typeof(BannerCondition), new Dictionary<uint, decimal>() {
+            // Simple Backgrounds
+            {703, new decimal(7.0)}, // Viper
+            {704, new decimal(7.0)}, // Pictomancer
+            // Ultimates, ideally we don't hardcode these.
+            {434, new decimal(6.31)}, // TOP
+            {872, new decimal(7.11)}, // FRU 
+        }}
     };
 
     public static readonly List<uint> IgnoreBardingId = new()
@@ -194,6 +233,19 @@ public class DataOverrides
 
         // Faux
         {1770282, 1033921 },
+
+        // Really unsure how they relate, but CustomTalk#721479 and CustomTalk#721480 
+        // has all the IDs for Bicolor Gem NPCs in Shadowbringers, and the rest are in order from the starting shop.
+        // Endwalker+ uses FateShop sheet for their system. If they ever go back and change ShB to use the FateShop,
+        // should automatically update.
+        {1769957, 1027385},
+        {1769958, 1027497},
+        {1769959, 1027892},
+        {1769960, 1027665},
+        {1769961, 1027709},
+        {1769962, 1027766},
+        {1769963, 1027998},
+        {1769964, 1027538},
 
         // Sajareen - Bicolor gems
         {1770471, 1037304 },

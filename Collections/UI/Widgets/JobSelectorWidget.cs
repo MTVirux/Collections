@@ -1,3 +1,5 @@
+using Dalamud.Utility;
+
 namespace Collections;
 
 public class JobSelectorWidget
@@ -5,11 +7,13 @@ public class JobSelectorWidget
     public Dictionary<ClassJob, bool> Filters;
 
     private const int JobIconScale = 7;
-    private const int IconSize = 25;
+    private int iconSize = 28;
     private Vector2 overrideItemSpacing = new(2, 1);
 
     // Specific filter for "All Classes" items
     private bool allClasses = true;
+    // Specific filter for "Job-Specific" items
+    private bool jobSpecific = true;
 
     private EventService EventService { get; init; }
     public JobSelectorWidget(EventService eventService)
@@ -63,7 +67,7 @@ public class JobSelectorWidget
                 if (icon != null)
                 {
                     // Button
-                    UiHelper.ImageToggleButton(icon, new Vector2(IconSize, IconSize), Filters[job]);
+                    UiHelper.ImageToggleButton(icon, new Vector2(iconSize, iconSize) * UiHelper.ScaleForFontSize(1), Filters[job]);
 
                     // Left click - Switch to selection
                     if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
@@ -80,6 +84,12 @@ public class JobSelectorWidget
                         Filters[job] = !Filters[job];
                         PublishFilterChangeEvent();
                     }
+                    if(ImGui.IsItemHovered())
+                    {
+                        ImGui.BeginTooltip();
+                        ImGui.Text(job.Name.ToString().FirstCharToUpper());
+                        ImGui.EndTooltip();
+                    }
                 }
                 ImGui.SameLine();
             }
@@ -87,7 +97,7 @@ public class JobSelectorWidget
             ImGui.Text("");
         }
         // "All Classes" Icon Button
-        UiHelper.ImageToggleButton(IconHandler.GetIcon(62522), new Vector2(IconSize, IconSize), allClasses);
+        UiHelper.ImageToggleButton(IconHandler.GetIcon(62522), new Vector2(iconSize, iconSize) * UiHelper.ScaleForFontSize(1), allClasses);
         if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
         {
             var newState = IsAllActive() ? true : !allClasses;
@@ -100,6 +110,33 @@ public class JobSelectorWidget
             allClasses = !allClasses;
             PublishFilterChangeEvent();
         }
+        if(ImGui.IsItemHovered())
+        {
+            ImGui.BeginTooltip();
+            ImGui.Text("All Classes");
+            ImGui.EndTooltip();
+        }
+        // Job-specific gear (Artifact basically)
+        ImGui.SameLine();
+        UiHelper.ImageToggleButton(IconHandler.GetIcon(62521), new Vector2(iconSize, iconSize) * UiHelper.ScaleForFontSize(1), jobSpecific);
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
+        {
+            var newState = IsAllActive() ? true : !jobSpecific;
+            SetAllState(false, false);
+            jobSpecific = newState;
+            PublishFilterChangeEvent();
+        }
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
+        {
+            jobSpecific = !jobSpecific;
+            PublishFilterChangeEvent();
+        }
+        if(ImGui.IsItemHovered())
+        {
+            ImGui.BeginTooltip();
+            ImGui.Text("Artifact Gear");
+            ImGui.EndTooltip();
+        }
         ImGui.PopStyleVar();
     }
 
@@ -107,13 +144,14 @@ public class JobSelectorWidget
     {
         Filters = Filters.ToDictionary(e => e.Key, e => state);
         allClasses = state;
+        jobSpecific = state;
         if (publishEvent)
             PublishFilterChangeEvent();
     }
 
     private void SetCurrentJob()
     {
-        var matchingClassJob = Filters.Where(e => e.Key.RowId == Services.ClientState.LocalPlayer.ClassJob.RowId);
+        var matchingClassJob = Filters.Where(e => e.Key.RowId == Services.PlayerState.ClassJob.RowId);
         if (matchingClassJob.Any())
         {
             SetAllState(false, false);
@@ -122,14 +160,24 @@ public class JobSelectorWidget
         }
     }
 
-    private bool IsAllActive()
+    public bool IsAllActive()
     {
-        return !Filters.Where(e => e.Value == false).Any() && allClasses;
+        return !Filters.Any(e => e.Value == false) && allClasses && jobSpecific;
+    }
+
+    public bool IsAllInactive()
+    {
+        return !Filters.Any(e => e.Value == true) && !allClasses && !jobSpecific;
     }
 
     public bool AllClasses()
     {
         return allClasses;
+    }
+
+    public bool JobSpecific()
+    {
+        return jobSpecific;
     }
 
     private void PublishFilterChangeEvent()

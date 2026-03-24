@@ -8,28 +8,12 @@ public class IconHandler
         this.iconId = iconId;
     }
 
-    private ISharedImmediateTexture? iconInternal = null;
-    private bool iconScheduled = false;
-    public ISharedImmediateTexture? GetIconLazy()
-    {
-        if (iconInternal != null)
-        {
-            return iconInternal;
-        }
-
-        // TODO attempt reload after some time
-        if (!iconScheduled)
-        {
-            iconScheduled = true;
-            Task.Run(() => iconInternal = GetIcon(iconId, false));
-        }
-
-        return null;
-    }
     public ISharedImmediateTexture GetIcon()
     {
+        // TODO attempt reload after some time
         return GetIcon(iconId, false);
     }
+
     public static ISharedImmediateTexture GetIcon(int iconId, bool hq = false)
     {
         var lookup = new GameIconLookup(iconId: (uint)iconId, itemHq: hq);

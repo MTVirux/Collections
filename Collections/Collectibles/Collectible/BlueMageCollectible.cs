@@ -45,9 +45,9 @@ public class BlueMageCollectible : Collectible<Lumina.Excel.Sheets.Action>, ICre
         return new HintModule($"Recast: {ExcelRow.Recast100ms / 100f}s", null);
     }
 
-    public override unsafe void UpdateObtainedState()
+    public override void UpdateObtainedState()
     {
-        isObtained = UIState.Instance()->IsUnlockLinkUnlocked(ExcelRow.UnlockLink.RowId);
+        isObtained = Services.UnlockState.IsUnlockLinkUnlocked(ExcelRow.UnlockLink.RowId);
     }
 
     protected override int GetIconId()

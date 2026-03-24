@@ -1,4 +1,3 @@
-using Dalamud.Game.ClientState.Objects;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 
@@ -7,18 +6,13 @@ namespace Collections;
 public class Services
 {
     [PluginService] public static IDalamudPluginInterface PluginInterface { get; private set; }
-    [PluginService] public static IChatGui ChatGui { get; private set; }
     [PluginService] public static IClientState ClientState { get; private set; }
+    [PluginService] public static IUnlockState UnlockState { get; private set; }
+    [PluginService] public static IPlayerState PlayerState { get; private set; }
     [PluginService] public static ICommandManager CommandManager { get; private set; }
-    [PluginService] public static ICondition Condition { get; private set; }
     [PluginService] public static IDataManager DataManager { get; private set; }
     [PluginService] public static IFramework Framework { get; private set; }
-    [PluginService] public static IGameGui GameGui { get; private set; }
-    [PluginService] public static IKeyState KeyState { get; private set; }
-    [PluginService] public static IObjectTable ObjectTable { get; private set; }
-    [PluginService] public static ISigScanner SigScanner { get; private set; }
     [PluginService] public static ITargetManager TargetManager { get; private set; }
-    [PluginService] public static IToastGui ToastGui { get; private set; }
     [PluginService] public static IPluginLog PluginLog { get; private set; }
     [PluginService] public static ITextureProvider TextureProvider { get; private set; }
     [PluginService] public static IDutyState DutyState { get; private set; }

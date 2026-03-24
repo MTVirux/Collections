@@ -1,3 +1,6 @@
+using LuminaSupplemental.Excel.Model;
+using LuminaSupplemental.Excel.Services;
+
 namespace Collections;
 
 public class ShopsDataGenerator : BaseDataGenerator<Shop>
@@ -71,7 +74,6 @@ public class ShopsDataGenerator : BaseDataGenerator<Shop>
                         continue;
                     }
 
-
                     // CustomTalk - SpecialLinks
                     if (customTalk.Value.SpecialLinks.RowId != 0)
                     {
@@ -116,6 +118,7 @@ public class ShopsDataGenerator : BaseDataGenerator<Shop>
                     addInclusionShop((InclusionShop)inclusionShop!, ENpcBase.RowId);
                 }
 
+
                 // PreHandler
                 var preHandler = PreHandlerSheet.GetRow(npcData);
                 if (preHandler != null)
@@ -155,7 +158,7 @@ public class ShopsDataGenerator : BaseDataGenerator<Shop>
                 }
             }
         }
-
+        
         // Inject manual data
         foreach (var (NpcBaseId, gilShopRowIds) in DataOverrides.GilShopToNpcBase)
         {
@@ -169,6 +172,16 @@ public class ShopsDataGenerator : BaseDataGenerator<Shop>
         {
             NpcDataToNpcBase.TryAdd(specialShopRowId, NpcBaseId);
         }
+
+        // FateShop RowId and the ENpcBase RowID are the fucking same =/
+        foreach(var fateShop in ExcelCache<FateShop>.GetSheet().Where(shop => shop.RowId != 0))
+        {
+            foreach(var specShop in fateShop.SpecialShop)
+            {
+                NpcDataToNpcBase.TryAdd(specShop.RowId, fateShop.RowId);
+            }
+        }
+        
         //Dev.Stop();
     }
 
@@ -349,7 +362,7 @@ public class ShopsDataGenerator : BaseDataGenerator<Shop>
         //Dev.Stop();
     }
 
-    private void PopulateSpecialShop()
+    private unsafe void PopulateSpecialShop()
     {
         //Dev.Start();
 
@@ -376,7 +389,8 @@ public class ShopsDataGenerator : BaseDataGenerator<Shop>
                     {
                         continue;
                     }
-                    var Item = ItemSheet.GetRow(SpecialShopExtensions.FixItemId(specialShop, cost.ItemCost.RowId, specialShop.UseCurrencyType));
+                    
+                    var Item = ItemSheet.GetRow(SpecialShopExtensions.FixItemId(specialShop, cost.ItemCost.RowId, specialShop.UseCurrencyType, FFXIVClientStructs.FFXIV.Client.Game.CurrencyManager.Instance()));
                     if (Item != null)
                     {
                         costList.Add((Item.Value, (int)cost.CurrencyCost));

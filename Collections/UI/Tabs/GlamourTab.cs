@@ -12,6 +12,7 @@ public class GlamourTab : IDrawable
     private CollectionWidget CollectionWidget { get; init; }
     private EventService EventService { get; init; }
     private bool FiltersCollapsed { get; set; } = false;
+    private bool GlamTreeCollapsed {get; set;} = false;
 
     public GlamourTab()
     {
@@ -21,7 +22,7 @@ public class GlamourTab : IDrawable
         ContentFiltersWidget = new ContentFiltersWidget(EventService, 2);
         EquipSlotsWidget = new EquipSlotsWidget(EventService);
         filteredCollection = GetInitialCollection();
-        CollectionWidget = new CollectionWidget(EventService, true, filteredCollection.Count > 0 ? filteredCollection.First().GetSortOptions() : null);
+        CollectionWidget = new CollectionWidget(EventService, true, filteredCollection.FirstOrDefault()?.GetSortOptions(), filteredCollection.FirstOrDefault()?.GetFilterOptions());
 
         ApplyFilters();
 
@@ -41,27 +42,47 @@ public class GlamourTab : IDrawable
     public void Draw()
     {
         // Dev.Start();
-
-        if (ImGui.BeginTable("glam-tree", 1, ImGuiTableFlags.Borders | ImGuiTableFlags.NoHostExtendX | ImGuiTableFlags.SizingFixedFit))
+        ImGui.BeginGroup();
+        if (ImGui.BeginTable("glam-tree", 1, ImGuiTableFlags.Borders | ImGuiTableFlags.NoHostExtendX | ImGuiTableFlags.SizingFixedSame))
         {
-
-            ImGui.TableSetupColumn("Sets", ImGuiTableColumnFlags.None, UiHelper.UnitWidth() * GlamourSetsWidgetWidth);
-            ImGui.TableHeadersRow();
-            // if (ImGuiComponents.IconButton(FontAwesomeIcon.ArrowLeft))
-            // {
-            //     GlamourTreeCollapsed = !GlamourTreeCollapsed;
-            // }
-
-            // if (!GlamourTreeCollapsed)
-            // {
-            ImGui.TableNextRow(ImGuiTableRowFlags.None, UiHelper.GetLengthToBottomOfWindow());
             ImGui.TableNextColumn();
+            UiHelper.GroupWithMinWidth(() =>
+            {
+                var cursorPos = ImGui.GetCursorPos();
+                ImGui.TableHeader("");
+                ImGui.SetCursorPos(new Vector2(cursorPos.X + 2, cursorPos.Y));
+                if (!GlamTreeCollapsed)
+                {
+                    ImGuiComponents.IconButton(FontAwesomeIcon.ArrowLeft);
+                    ImGui.SameLine();
+                    ImGui.Text("Sets");
+                }
+                else
+                {
+                    ImGuiComponents.IconButton(FontAwesomeIcon.ArrowRight);
+                    if(ImGui.IsItemHovered())
+                    {
+                        ImGui.BeginTooltip();
+                        ImGui.Text("Sets");
+                        ImGui.EndTooltip();
+                    }
+                }
+            }, 5);
+            if (ImGui.IsItemClicked())
+            {
+                GlamTreeCollapsed = !GlamTreeCollapsed;
+            }
 
-            GlamourTreeWidget.Draw();
-            // }
+            if (!GlamTreeCollapsed)
+            {
+                ImGui.TableNextRow(ImGuiTableRowFlags.None, UiHelper.GetLengthToBottomOfWindow());
+                ImGui.TableNextColumn();
 
+                GlamourTreeWidget.Draw();
+            }
             ImGui.EndTable();
         }
+        ImGui.EndGroup();
         ImGui.SameLine();
 
         // Equip slot buttons
@@ -98,11 +119,17 @@ public class GlamourTab : IDrawable
                 {
                     ImGuiComponents.IconButton(FontAwesomeIcon.ArrowLeft);
                     ImGui.SameLine();
-                    ImGui.Text("Filter");
+                    ImGui.Text("Filters");
                 }
                 else
                 {
                     ImGuiComponents.IconButton(FontAwesomeIcon.ArrowRight);
+                    if(ImGui.IsItemHovered())
+                    {
+                        ImGui.BeginTooltip();
+                        ImGui.Text("Filters");
+                        ImGui.EndTooltip();
+                    }
                 }
             }, 5);
             // var cursorPos = ImGui.GetCursorPos();
@@ -208,13 +235,20 @@ public class GlamourTab : IDrawable
         // (3) job filters
         .Where(c =>
             {
-                // show all items if all filters disabled
-                if (!jobFilters.Any() && !JobSelectorWidget.AllClasses())
+                // show all items if all filters enabled or disabled
+                if (JobSelectorWidget.IsAllActive() || JobSelectorWidget.IsAllInactive())
                     return true;
                 var itemJobCat = ((GlamourCollectible)c).ExcelRow.ClassJobCategory.Value;
                 // only show "All Classes" items if toggled
                 if (itemJobCat.RowId < 2) return JobSelectorWidget.AllClasses();
                 var itemJobs = itemJobCat.GetJobs();
+                if(JobSelectorWidget.JobSpecific()) {
+                    // Shows all job-specific gear if there aren't any specific jobs being looked for
+                    if(!jobFilters.Any() && itemJobs.Count <= 2)
+                        return true;
+                    else if(itemJobs.Count > 2)
+                        return false;
+                }
                 foreach (var jobFilter in jobFilters)
                 {
                     if (itemJobs.Contains(jobFilter))

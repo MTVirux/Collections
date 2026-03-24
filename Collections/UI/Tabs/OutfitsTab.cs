@@ -20,7 +20,7 @@ public class OutfitsTab : IDrawable
         EquipSlotsWidget.currentGlamourSet = new GlamourSet("outfits preview");
         filteredCollection = GetInitialCollection();
         collectionSize = filteredCollection.Count();
-        CollectionWidget = new CollectionWidget(EventService, true, filteredCollection.Count > 0 ? filteredCollection.First().GetSortOptions() : null);
+        CollectionWidget = new CollectionWidget(EventService, true, filteredCollection.FirstOrDefault()?.GetSortOptions(), filteredCollection.FirstOrDefault()?.GetFilterOptions());
 
         ApplyFilters();
 
@@ -156,12 +156,19 @@ public class OutfitsTab : IDrawable
         .Where(c =>
             {
                 // show all items if all filters disabled
-                if (!jobFilters.Any() && !JobSelectorWidget.AllClasses())
+                if (JobSelectorWidget.IsAllActive() || JobSelectorWidget.IsAllInactive())
                     return true;
                 var itemJobCat = ((OutfitKey)c.CollectibleKey).FirstItem.ClassJobCategory.Value;
                 // only show "All Classes" items if toggled
                 if (itemJobCat.RowId < 2) return JobSelectorWidget.AllClasses();
                 var itemJobs = itemJobCat.GetJobs();
+                if(JobSelectorWidget.JobSpecific()) {
+                    // Shows all job-specific gear if there aren't any specific jobs being looked for
+                    if(!jobFilters.Any() && itemJobs.Count <= 2)
+                        return true;
+                    else if(itemJobs.Count > 2)
+                        return false;
+                }
                 foreach (var jobFilter in jobFilters)
                 {
                     if (itemJobs.Contains(jobFilter))

@@ -42,7 +42,7 @@ public class GlassesCollectible: Collectible<Glasses>, ICreateable<GlassesCollec
 
     public override unsafe void UpdateObtainedState()
     {
-        isObtained = PlayerState.Instance()->IsGlassesUnlocked((ushort)ExcelRow.RowId);
+        isObtained = Services.UnlockState.IsGlassesUnlocked(ExcelRow);
     }
 
     protected override int GetIconId()
@@ -52,8 +52,10 @@ public class GlassesCollectible: Collectible<Glasses>, ICreateable<GlassesCollec
 
     public override unsafe void Interact()
     {
-        if(isObtained)
-            ActionManager.Instance()->UseAction(ActionType.Unk_10, ExcelRow.RowId);
+        // Look into using Character->DrawData.SetGlasses(0, (ushort)glassesId);
+        // Most likely need to handle this via PreviewExecutor to not clutter everything.
+        // if (isObtained)
+        //     ActionManager.Instance()->UseAction(ActionType.Unk12, ExcelRow.RowId);
     }
 
     public override void OpenGamerEscape()

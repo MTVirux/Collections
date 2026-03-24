@@ -11,7 +11,7 @@ public class EquipSlotsWidget
     private Vector2 equipSlotBackgroundRectSize = new(46, 46);
     private Vector2 paletteWidgetButtonOffset = new(-25, 34);
     private Vector4 paletteWidgetButtonDefaultColor = ColorsPalette.WHITE;
-    private Vector2 brushIconRectSize = new(5, 5);
+    private Vector2 brushIconRectSize = new(4, 4);
 
     public GlamourSet currentGlamourSet { get; set; }
     private Dictionary<EquipSlot, bool> hoveredPaletteButton = new();
@@ -30,15 +30,6 @@ public class EquipSlotsWidget
         eventService.Subscribe<DyeChangeEvent, DyeChangeEventArgs>(OnPublish);
     }
 
-    private void DrawButtons()
-    {
-        //ImGui.PushStyleColor(ImGuiCol.Button, Services.WindowsInitializer.MainWindow.originalButtonColor);
-        //ImGui.Button("Reapply Preview");
-        //ImGui.Button("Reset Preview");
-        //ImGui.Button("Add to Plate");
-        //ImGui.PopStyleColor();
-    }
-
     private void ApplyGlamourSetToPlate()
     {
         // TODO indication which items exist in Dresser
@@ -50,30 +41,14 @@ public class EquipSlotsWidget
 
     public unsafe void Draw()
     {
-        DrawButtons();
-
+        // max size of a slot if active. 
+        float slotSize = UiHelper.ScaleForFontSize(50.2f);
+        // ratio to scale slot icons by
+        const float iconScale = .916f;
         var bgColor = *ImGui.GetStyleColorVec4(ImGuiCol.WindowBg);
         for (int i = 0; i < Services.DataProvider.SupportedEquipSlots.Count; i++)
         {
             EquipSlot equipSlot = Services.DataProvider.SupportedEquipSlots[i];
-            // i+1 here so that we only do this every odd item
-            if ((i + 1) % 2 == 0) ImGui.SameLine();
-            // Draw blue rect border over active equip slot
-            var origPos = ImGui.GetCursorPos();
-            if (activeEquipSlot == equipSlot)
-            {
-                ImGui.SetCursorPos(new Vector2(origPos.X - 1.8f, origPos.Y - 1.8f));
-                ImGui.ColorButton(equipSlot.ToString(), ColorsPalette.BLUE, ImGuiColorEditFlags.NoTooltip, activeEquipSlotRectSize);
-                ImGui.SetCursorPos(origPos);
-            }
-            ImGui.SetCursorPos(origPos);
-
-            // Draw bg rect over all equip slots
-            origPos = ImGui.GetCursorPos();
-            ImGui.ColorButton(equipSlot.ToString(), bgColor, ImGuiColorEditFlags.NoTooltip, equipSlotBackgroundRectSize);
-            ImGui.SetCursorPos(origPos);
-
-            ImGui.SetItemAllowOverlap();
 
             // Load collectible if set
             ISharedImmediateTexture icon = null;
@@ -83,15 +58,35 @@ public class EquipSlotsWidget
             if (glamourItem is not null)
             {
                 collectible = glamourItem.GetCollectible();
-                icon = collectible.GetIconLazy();
+                icon = collectible.GetIcon();
             }
 
             // Draw icon
             if (icon is null)
                 icon = equipSlotIcons[equipSlot];
 
+            // i+1 here so that we only do this every odd item
+            if ((i + 1) % 2 == 0) ImGui.SameLine();
+            // Draw blue rect border over active equip slot
+            var origPos = ImGui.GetCursorPos();
+            if (activeEquipSlot == equipSlot)
+            {
+                ImGui.SetCursorPos(new Vector2(origPos.X - ImGui.GetFontSize() * .11f, origPos.Y - ImGui.GetFontSize() * .11f));
+                ImGui.ColorButton(equipSlot.ToString(), ColorsPalette.BLUE, ImGuiColorEditFlags.NoTooltip, new Vector2(slotSize, slotSize));
+                ImGui.SetCursorPos(origPos);
+            }
+
+            // adjust icon to scale correctly based on 
+            ImGui.ColorButton(equipSlot.ToString(), bgColor, ImGuiColorEditFlags.NoTooltip, new Vector2(slotSize, slotSize) * iconScale);
+            var finalCursorPos = ImGui.GetCursorPos();
+            ImGui.SetCursorPos(origPos);
+
+            ImGui.SetItemAllowOverlap();
+
             // Draw equip slot buttons
-            if (ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new Vector2(38, 40)))
+            // overwrite custom ImGui frame padding so it's actually a square (default is (4,3))
+            const int equipSlotFramePadding = 2;
+            if (ImGui.ImageButton(icon.GetWrapOrEmpty().Handle, new Vector2(slotSize - equipSlotFramePadding * 2, slotSize - equipSlotFramePadding * 2) * iconScale, equipSlotFramePadding))
             {
                 SetEquipSlot(equipSlot);
             }
@@ -101,28 +96,68 @@ public class EquipSlotsWidget
             {
                 // Details on hover
                 ImGui.BeginTooltip();
+                ImGui.Text("Right Click to interact...");
                 CollectibleTooltipWidget.DrawItemTooltip(collectible);
                 ImGui.EndTooltip();
-
-                // Reset on right click
-                if (ImGui.IsMouseClicked(ImGuiMouseButton.Right))
+            }
+            if (collectible is not null && !hoveredPaletteButton[equipSlot] && ImGui.BeginPopupContextItem($"click-glam-item##{collectible.GetHashCode()}", ImGuiPopupFlags.MouseButtonRight))
+            {
+                if(ImGui.Button("Remove from Slot"))
                 {
                     currentGlamourSet.ClearEquipSlot(equipSlot);
                     Services.PreviewExecutor.ResetSlotPreview(equipSlot);
                 }
+                CollectibleTooltipWidget.DrawItemTooltip(collectible);
+                ImGui.EndPopup();
             }
-
+             // Draw dye circles if able
+            if(collectible is not null)
+            {
+                int dyeSlots = collectible.GetNumberOfDyeSlots();
+                if (dyeSlots > 0)
+                {
+                    // First dye slot
+                    var primaryDyeColor = paletteWidgets[equipSlot].ActiveStainPrimary.RowId == 0 ?
+                        ColorsPalette.BLACK : paletteWidgets[equipSlot].ActiveStainPrimary.VecColor();
+                    ImGui.SameLine();
+                    ImGui.SetItemAllowOverlap();
+                    ImGui.SetCursorPos(origPos + new Vector2(slotSize - ImGui.GetFontSize(), 0) * .9f);
+                    ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0, 0, 0, 0));
+                    ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0, 0, 0, 0));
+                    ImGui.PushStyleColor(ImGuiCol.Text, primaryDyeColor);
+                    ImGui.SetWindowFontScale(.65f);
+                    ImGuiComponents.IconButton(paletteWidgets[equipSlot].ActiveStainPrimary.RowId == 0 ? FontAwesomeIcon.CircleNotch : FontAwesomeIcon.Circle);
+                    ImGui.SetWindowFontScale(1f);
+                    ImGui.PopStyleColor();
+                    if (dyeSlots == 2)
+                    {
+                        // second dye slot
+                        var secondaryDyeColor = paletteWidgets[equipSlot].ActiveStainSecondary.RowId == 0 ?
+                            ColorsPalette.BLACK : paletteWidgets[equipSlot].ActiveStainSecondary.VecColor();
+                        ImGui.SameLine();
+                        ImGui.SetItemAllowOverlap();
+                        ImGui.SetCursorPos(origPos + new Vector2(slotSize - ImGui.GetFontSize(), ImGui.GetFontSize()) * .9f);
+                        ImGui.PushStyleColor(ImGuiCol.Text, secondaryDyeColor);
+                        ImGui.SetWindowFontScale(.65f);
+                        ImGuiComponents.IconButton(paletteWidgets[equipSlot].ActiveStainSecondary.RowId == 0 ? FontAwesomeIcon.CircleNotch : FontAwesomeIcon.Circle);
+                        ImGui.SetWindowFontScale(1f);
+                        ImGui.PopStyleColor();
+                    }
+                    // pops the text button hover/active colors
+                    ImGui.PopStyleColor();
+                    ImGui.PopStyleColor();
+                }
+            }
             // Set cursor on bottom right to draw Palette Widget button
             ImGui.SameLine();
             ImGui.SetItemAllowOverlap(); // Makes this button take precedence
-            ImGui.SetCursorPos(new Vector2(ImGui.GetCursorPos().X + paletteWidgetButtonOffset.X, ImGui.GetCursorPos().Y + paletteWidgetButtonOffset.Y));
-
-            // Draw Palette Widget button
-            var paletteButtonColor = paletteWidgets[equipSlot].ActiveStainPrimary.RowId == 0 ?
-                paletteWidgetButtonDefaultColor : paletteWidgets[equipSlot].ActiveStainPrimary.VecColor();
-            ImGui.PushStyleColor(ImGuiCol.Text, paletteButtonColor);
+            ImGui.SetCursorPos(origPos + new Vector2(slotSize - ImGui.GetFontSize(), slotSize - ImGui.GetFontSize()) * 0.9f);
+            
+            ImGui.PushStyleColor(ImGuiCol.Text, paletteWidgetButtonDefaultColor);
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0, 0, 0, 0));
-            ImGuiComponents.IconButton(FontAwesomeIcon.PaintBrush, brushIconRectSize);
+            ImGui.SetWindowFontScale(.7f);
+            ImGuiComponents.IconButton(FontAwesomeIcon.PaintBrush);
+            ImGui.SetWindowFontScale(1f);
             ImGui.PopStyleColor();
             ImGui.PopStyleColor();
 
@@ -157,6 +192,7 @@ public class EquipSlotsWidget
             {
                 hoveredPaletteButton[equipSlot] = false;
             }
+            ImGui.SetCursorPos(finalCursorPos);
         }
     }
 
@@ -226,6 +262,7 @@ public class EquipSlotsWidget
 
     public void OnPublish(GlamourItemChangeEventArgs args)
     {
+        if (Services.Configuration.SeparatePreviewAndApply && !args.ApplyToSlot) return;
         // Update current glamour set
         var item = args.Collectible.ExcelRow;
         currentGlamourSet.SetItem(item, paletteWidgets[item.GetEquipSlot()].ActiveStainPrimary.RowId, paletteWidgets[item.GetEquipSlot()].ActiveStainSecondary.RowId, equipSlot: activeEquipSlot);
@@ -235,8 +272,11 @@ public class EquipSlotsWidget
     {
         var glamourItem = currentGlamourSet.GetItem(args.EquipSlot);
         var equipSlot = args.EquipSlot;
+        // Update currentGlamourSet
+        currentGlamourSet.GetItem(equipSlot)?.Stain0Id = paletteWidgets[equipSlot].ActiveStainPrimary.RowId;
+        currentGlamourSet.GetItem(equipSlot)?.Stain1Id = paletteWidgets[equipSlot].ActiveStainSecondary.RowId;
         // If Dye changed for empty equip slot - use the characters equipped item
-        if (glamourItem is null)
+        if (glamourItem is null || Services.Configuration.SeparatePreviewAndApply)
         {
             Services.PreviewExecutor.PreviewWithTryOnRestrictions(
                 equipSlot,
@@ -244,21 +284,17 @@ public class EquipSlotsWidget
                 paletteWidgets[equipSlot].ActiveStainSecondary.RowId,
                 Services.Configuration.ForceTryOn
                 );
-            return;
         }
-
-
-        // Update currentGlamourSet
-        currentGlamourSet.GetItem(equipSlot).Stain0Id = paletteWidgets[equipSlot].ActiveStainPrimary.RowId;
-        currentGlamourSet.GetItem(equipSlot).Stain1Id = paletteWidgets[equipSlot].ActiveStainSecondary.RowId;
-
-        // Refresh Preview
-        Services.PreviewExecutor.PreviewWithTryOnRestrictions(
-            glamourItem.GetCollectible(),
-            paletteWidgets[equipSlot].ActiveStainPrimary.RowId,
-            paletteWidgets[equipSlot].ActiveStainSecondary.RowId,
-            Services.Configuration.ForceTryOn
+        else
+        {
+            // Refresh Preview
+            Services.PreviewExecutor.PreviewWithTryOnRestrictions(
+                glamourItem.GetCollectible(),
+                paletteWidgets[equipSlot].ActiveStainPrimary.RowId,
+                paletteWidgets[equipSlot].ActiveStainSecondary.RowId,
+                Services.Configuration.ForceTryOn
             );
+        }
     }
 }
 

@@ -7,8 +7,8 @@ public class GlamourTreeWidget
 {
     private GlamourSet currentGlamourSet;
     private GlamourTree glamourTree = new();
-    private IconHandler glamourPlateIconHandler = new IconHandler(000125);
-    private IconHandler copyExamineIconHandler = new IconHandler(060642);
+    private int glamourPlateIcon = 000125;
+    private int copyExamineIcon = 060642;
     private Vector2 iconSize = new(21, 21);
     private bool collapsed = false;
 
@@ -57,7 +57,7 @@ public class GlamourTreeWidget
         ImGui.SameLine();
 
         // Add to Glamour Plate Button
-        var icon = glamourPlateIconHandler.GetIconLazy();
+        var icon = IconHandler.GetIcon(glamourPlateIcon);
         if (icon is not null)
         {
             var isInPlateWindow = PlatesExecutor.IsInPlateWindow();
@@ -91,7 +91,7 @@ public class GlamourTreeWidget
         }
 
         // Copy from Examine window Button
-        icon = copyExamineIconHandler.GetIconLazy();
+        icon = IconHandler.GetIcon(copyExamineIcon);
         if (icon is not null)
         {
             var isInspecting = IsInspecting();

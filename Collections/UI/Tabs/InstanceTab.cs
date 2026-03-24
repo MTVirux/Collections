@@ -80,7 +80,7 @@ public class InstanceTab : IDrawable
                     if(c.GetCollectionName() == BlueMageCollectible.CollectionName) {
                         return false;
                     }
-                    if ((c.CollectibleKey is not null) && ((c.CollectibleKey.Id == 0) || (!currentDutyItemIds.Contains(c.CollectibleKey.Id))))
+                    if (((c.CollectibleKey?.Id ?? 0) == 0) || (!currentDutyItemIds?.Contains(c.CollectibleKey?.Id ?? 0) ?? true))
                     {
                         return false;
                     }

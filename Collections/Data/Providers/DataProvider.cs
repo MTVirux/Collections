@@ -201,9 +201,16 @@ public class DataProvider
         collections[typeof(FramerKitCollectible)] = (
             FramerKitCollectible.CollectionName,
             10,
-            ExcelCache<Item>.GetSheet().AsParallel()
-            .Where(entry => entry.ItemAction.Value.Action.RowId == 29459)
-            .Select(entry => (ICollectible)CollectibleCache<FramerKitCollectible, Item>.Instance.GetObject(entry))
+            ExcelCache<BannerCondition>.GetSheet().AsParallel()
+            .Where(entry =>
+                (entry.UnlockType1 == 1 && entry.UnlockType2 == 2 && entry.PrerequisiteType == 0) || // Job Portraits
+                entry.UnlockType1 == 4 || // Ultimates
+                entry.UnlockType1 == 9 || // Framer Kit
+                entry.UnlockType1 == 11 || // Crystal Conflict
+                entry.UnlockType1 == 2 || // Misc
+                (entry.RowId >= 156 && entry.RowId <= 164) // ARR Class Portraits
+            )
+            .Select(entry => (ICollectible)CollectibleCache<FramerKitCollectible, BannerCondition>.Instance.GetObject(entry))
             .ToList()
             );
     }

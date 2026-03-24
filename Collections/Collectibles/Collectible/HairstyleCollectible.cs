@@ -45,9 +45,9 @@ public class HairstyleCollectible : Collectible<CharaMakeCustomize>, ICreateable
         return "";
     }
 
-    public override unsafe void UpdateObtainedState()
+    public override void UpdateObtainedState()
     {
-        isObtained = UIState.Instance()->IsUnlockLinkUnlocked(ExcelRow.UnlockLink);
+        isObtained = Services.UnlockState.IsCharaMakeCustomizeUnlocked(ExcelRow);
     }
 
     protected override int GetIconId()

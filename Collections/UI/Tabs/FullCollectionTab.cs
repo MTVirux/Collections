@@ -18,7 +18,8 @@ public class FullCollectionTab : IDrawable
         filteredCollection = LoadInitialCollection();
         try
         {
-            CollectionWidget = new CollectionWidget(EventService, false, Services.DataProvider.GetCollection<MinionCollectible>().First().GetSortOptions());
+            var mini = Services.DataProvider.GetCollection<MinionCollectible>();
+            CollectionWidget = new CollectionWidget(EventService, false, mini.FirstOrDefault()?.GetSortOptions(), mini.FirstOrDefault()?.GetFilterOptions());
         }
         // only happens if collection has no items
         catch (ArgumentNullException)

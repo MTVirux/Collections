@@ -39,24 +39,25 @@ public class OutfitsCollectible : Collectible<Item>, ICreateable<OutfitsCollecti
     {
         var items = Services.ItemFinder.ItemIdsInOutfit(ExcelRow.RowId);
         var collectibles = Services.DataProvider.GetCollection<GlamourCollectible>()?.Where(c => items.Contains(c.Id)).ToList();
+        var iconSize = UiHelper.ScaleForFontSize(50);
         for(int i = 0; i < collectibles?.Count; i++)
         {
             var c = collectibles[i];
-            var icon = c.GetIconLazy();
+            var icon = c.GetIcon();
             if (icon != null)
             {
-                var origPos = ImGui.GetCursorPos();
-                ImGui.Image(icon.GetWrapOrEmpty().Handle, new Vector2(50, 50));
+                ImGui.Image(icon.GetWrapOrEmpty().Handle, new Vector2(iconSize, iconSize));
+                if (i < collectibles.Count - 1)
+                {
+                    ImGui.SameLine();
+                }
+                var finalPos = ImGui.GetCursorPos();
                 c.UpdateObtainedState();
                 if (c.GetIsObtained())
                 {
                     var _ = true;
-                    UiHelper.IconButtonWithOffset(0, FontAwesomeIcon.Check, 32, -32, ref _, 1.1f, new Vector4(1f, .741f, .188f, 1).Darken(.7f), ColorsPalette.BLACK.WithAlpha(0));
-                    UiHelper.IconButtonWithOffset(0, FontAwesomeIcon.Check, 32, -32, ref _, 1.0f, new Vector4(1f, .741f, .188f, 1), ColorsPalette.BLACK.WithAlpha(0));
-                }
-                if (i < collectibles.Count - 1)
-                {
-                    ImGui.SameLine();
+                    UiHelper.IconButtonWithOffset(i, FontAwesomeIcon.Check, ImGui.GetFontSize() + (ImGui.ImGuiStyle().ItemSpacing.X * (17 / ImGui.GetFontSize())), -iconSize + ImGui.GetFontSize(), ref _, .735f, new Vector4(1f, .741f, .188f, 1), ColorsPalette.BLACK.WithAlpha(0));
+                    ImGui.SetCursorPos(finalPos);
                 }
             }
         }

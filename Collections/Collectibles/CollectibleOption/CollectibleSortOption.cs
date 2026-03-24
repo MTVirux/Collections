@@ -1,6 +1,4 @@
-using System.Text.RegularExpressions;
 using Collections;
-using FFXIVClientStructs.FFXIV.Common.Lua;
 
 // Provides collections a way to specify ways of sorting 
 public class CollectibleSortOption
