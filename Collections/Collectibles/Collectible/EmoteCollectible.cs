@@ -1,3 +1,4 @@
+using System.Globalization;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
 
 namespace Collections;
@@ -49,7 +50,7 @@ public class EmoteCollectible : Collectible<Emote>, ICreateable<EmoteCollectible
             int majorPatch = ExcelRow.Patch / 100; // truncating
             int minorPatch = ExcelRow.Patch - (majorPatch * 100);
             if(minorPatch % 10 == 0) minorPatch /= 10;
-            if(decimal.TryParse($"{majorPatch}.{minorPatch}", out decimal temp))
+            if(decimal.TryParse($"{majorPatch}.{minorPatch}", CultureInfo.InvariantCulture, out decimal temp))
                 return temp;
         }
         return base.GetPatchAdded();
