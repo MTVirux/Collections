@@ -60,16 +60,17 @@ public class DataOverrides
             {50, new decimal(2.5)}, // Midgarsormr
         }},
         {typeof(BuddyEquip), new Dictionary<uint, decimal>() {
-            {1, decimal.Parse("2.0")}, // Lominsan Saddle
-            {5, decimal.Parse("2.0")}, // Gridanian Saddle
-            {9, decimal.Parse("2.0")}, // Ul'dahn Saddle
+            // multiply any .0 decimals by 1.0m to format properly
+            {1, new decimal(2.0) * 1.0m}, // Lominsan Saddle
+            {5, new decimal(2.0) * 1.0m}, // Gridanian Saddle
+            {9, new decimal(2.0) * 1.0m}, // Uldah Saddle
         }},
         {typeof(CharaMakeCustomize), new Dictionary<uint, decimal>() {
             {228, new decimal(2.4)}, // Eternal Bonding
         }},
         // willing to do this now that they added actual patch data for new emotes
         {typeof(Emote), new Dictionary<uint, decimal>() {
-            {23, decimal.Parse("2.0")}, // Garlean Salute
+            {23, new decimal(2.0) * 1.0m}, // Garlean Salute
             {24, new decimal(2.1)}, // Throw
             {27, new decimal(2.2)}, // Step Dance
             {28, new decimal(2.2)}, // Harvest Dance
@@ -84,8 +85,8 @@ public class DataOverrides
             {67862, new decimal(3.3)}, // Moogle Dance
             {334, new decimal(3.5)}, // Spectacles
             {332, new decimal(3.5)}, // Moonlift Dance
-            {340, new decimal(4.0)}, // Water Flip
-            {68016, new decimal(4.0)}, // Eastern Bow
+            {340, new decimal(4.0) * 1.0m}, // Water Flip
+            {68016, new decimal(4.0) * 1.0m}, // Eastern Bow
             {68498, new decimal(4.1)}, // Box
             {68558, new decimal(4.2)}, // Greeting
             {68612, new decimal(4.3)}, // Ponder
@@ -93,13 +94,13 @@ public class DataOverrides
             {68688, new decimal(4.4)}, // Hum 
             {68700, new decimal(4.5)}, // Gratuity
             {68704, new decimal(4.5)}, // Manderville Mambo
-            {69095, new decimal(5.0)}, // Lali-Ho
+            {69095, new decimal(5.0) * 1.0m}, // Lali-Ho
         }},
         // Hate this even more, but even if we did have quest patch data, we still have to manually override these particular ones
         {typeof(BannerCondition), new Dictionary<uint, decimal>() {
             // Simple Backgrounds
-            {703, new decimal(7.0)}, // Viper
-            {704, new decimal(7.0)}, // Pictomancer
+            {703, new decimal(7.0) * 1.0m}, // Viper
+            {704, new decimal(7.0) * 1.0m}, // Pictomancer
             // Ultimates, ideally we don't hardcode these.
             {434, new decimal(6.31)}, // TOP
             {872, new decimal(7.11)}, // FRU 
