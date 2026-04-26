@@ -57,53 +57,52 @@ public class DataOverrides
     public static readonly Dictionary<Type, Dictionary<uint, decimal>> collectibleIdToPatchAdded = new()
     {
         {typeof(Mount), new Dictionary<uint, decimal>() {
-            {50, new decimal(2.5)}, // Midgarsormr
+            {50, 2.5m}, // Midgarsormr
         }},
         {typeof(BuddyEquip), new Dictionary<uint, decimal>() {
-            // multiply any .0 decimals by 1.0m to format properly
-            {1, new decimal(2.0) * 1.0m}, // Lominsan Saddle
-            {5, new decimal(2.0) * 1.0m}, // Gridanian Saddle
-            {9, new decimal(2.0) * 1.0m}, // Uldah Saddle
+            {1, 2.0m}, // Lominsan Saddle
+            {5, 2.0m}, // Gridanian Saddle
+            {9, 2.0m}, // Uldah Saddle
         }},
         {typeof(CharaMakeCustomize), new Dictionary<uint, decimal>() {
-            {228, new decimal(2.4)}, // Eternal Bonding
+            {228, 2.4m}, // Eternal Bonding
         }},
         // willing to do this now that they added actual patch data for new emotes
         {typeof(Emote), new Dictionary<uint, decimal>() {
-            {23, new decimal(2.0) * 1.0m}, // Garlean Salute
-            {24, new decimal(2.1)}, // Throw
-            {27, new decimal(2.2)}, // Step Dance
-            {28, new decimal(2.2)}, // Harvest Dance
-            {29, new decimal(2.2)}, // Ball Dance
-            {30, new decimal(2.2)}, // Manderville Dance 
-            {229, new decimal(2.3)}, // Embrace
-            {244, new decimal(2.5)}, // Most Gentlemanly
-            {283, new decimal(3.1)}, // Sundrop Dance
-            {305, new decimal(3.2)}, // Battle Stance
-            {306, new decimal(3.2)}, // Victory
-            {318, new decimal(3.3)}, // Hauchefant
-            {67862, new decimal(3.3)}, // Moogle Dance
-            {334, new decimal(3.5)}, // Spectacles
-            {332, new decimal(3.5)}, // Moonlift Dance
-            {340, new decimal(4.0) * 1.0m}, // Water Flip
-            {68016, new decimal(4.0) * 1.0m}, // Eastern Bow
-            {68498, new decimal(4.1)}, // Box
-            {68558, new decimal(4.2)}, // Greeting
-            {68612, new decimal(4.3)}, // Ponder
-            {68684, new decimal(4.4)}, // Endure
-            {68688, new decimal(4.4)}, // Hum 
-            {68700, new decimal(4.5)}, // Gratuity
-            {68704, new decimal(4.5)}, // Manderville Mambo
-            {69095, new decimal(5.0) * 1.0m}, // Lali-Ho
+            {23, 2.0m}, // Garlean Salute
+            {24, 2.1m}, // Throw
+            {27, 2.2m}, // Step Dance
+            {28, 2.2m}, // Harvest Dance
+            {29, 2.2m}, // Ball Dance
+            {30, 2.2m}, // Manderville Dance 
+            {229, 2.3m}, // Embrace
+            {244, 2.5m}, // Most Gentlemanly
+            {283, 3.1m}, // Sundrop Dance
+            {305, 3.2m}, // Battle Stance
+            {306, 3.2m}, // Victory
+            {318, 3.3m}, // Hauchefant
+            {67862, 3.3m}, // Moogle Dance
+            {334, 3.5m}, // Spectacles
+            {332, 3.5m}, // Moonlift Dance
+            {340, 4.0m}, // Water Flip
+            {68016, 4.0m}, // Eastern Bow
+            {68498, 4.1m}, // Box
+            {68558, 4.2m}, // Greeting
+            {68612, 4.3m}, // Ponder
+            {68684, 4.4m}, // Endure
+            {68688, 4.4m}, // Hum 
+            {68700, 4.5m}, // Gratuity
+            {68704, 4.5m}, // Manderville Mambo
+            {69095, 5.0m}, // Lali-Ho
         }},
         // Hate this even more, but even if we did have quest patch data, we still have to manually override these particular ones
         {typeof(BannerCondition), new Dictionary<uint, decimal>() {
             // Simple Backgrounds
-            {703, new decimal(7.0) * 1.0m}, // Viper
-            {704, new decimal(7.0) * 1.0m}, // Pictomancer
+            {703, 7.0m}, // Viper
+            {704, 7.0m}, // Pictomancer
             // Ultimates, ideally we don't hardcode these.
-            {434, new decimal(6.31)}, // TOP
-            {872, new decimal(7.11)}, // FRU 
+            {434, 6.31m}, // TOP
+            {872, 7.11m}, // FRU 
         }}
     };
 
