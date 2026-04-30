@@ -7,7 +7,7 @@ namespace Collections;
 public unsafe class PreviewExecutor
 {
     private HashSet<EquipSlot> previewHistory = new();
-    private static Character* Character = (Character*)Services.ClientState.LocalPlayer.Address;
+    private static Character* Character = (Character*)Services.ObjectTable.LocalPlayer.Address;
 
     public static bool IsInGPose()
     {
