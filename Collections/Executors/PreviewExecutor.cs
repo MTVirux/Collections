@@ -161,7 +161,7 @@ public unsafe class PreviewExecutor
     private void PreviewWeapon(EquipSlot equipSlot, WeaponModelId weaponModelId)
     {
         var weaponSlot = EquipSlotConverter.EquipSlotToWeaponSlot(equipSlot);
-        Character->DrawData.LoadWeapon(weaponSlot, weaponModelId, 0, 0, 0, 0);
+        Character->DrawData.LoadWeapon(weaponSlot, weaponModelId, 0, 0, 0, 0, false);
     }
 
     private EquipmentModelId GetEquipmentModelId(Item item, byte stain0Id, byte? stain1Id)
